@@ -1,0 +1,598 @@
+:root {
+  --bg: #eef1f8;
+  --surface: #ffffff;
+  --card-bg: #ffffff;
+  --surface-alt: #f5f7fc;
+  --border: #d5dae6;
+  --border-soft: #e4e8f1;
+  --fg: #131a2b;
+  --muted: #667090;
+  --accent: #2f6df6;
+  --accent-hover: #1f57d6;
+  --accent-text: #ffffff;
+  --success: #0f9d6e;
+  --warning: #d98a00;
+  --error: #c8302a;
+  --ring-track: #dbe2f1;
+  --track-bg: #d7dff0;
+  --thumb-bg: #ffffff;
+  --shadow: 0 18px 40px -22px rgba(23, 38, 84, 0.35);
+  --radius-card: 18px;
+  --radius-ctrl: 11px;
+}
+
+html[data-theme="dark"] {
+  --bg: #14161d;
+  --surface: #1c1f28;
+  --card-bg: #1c1f28;
+  --surface-alt: #232732;
+  --border: #333846;
+  --border-soft: #2a2e3a;
+  --fg: #f2f4f9;
+  --muted: #9aa2b8;
+  --accent: #6f9dff;
+  --accent-hover: #8db3ff;
+  --accent-text: #0b0e15;
+  --success: #45d6a2;
+  --warning: #f0b23c;
+  --error: #ff6b62;
+  --ring-track: #2d3242;
+  --track-bg: #262b38;
+  --thumb-bg: #14161d;
+  --shadow: 0 20px 44px -24px rgba(0, 0, 0, 0.75);
+}
+
+body {
+  background-image:
+    radial-gradient(1200px 600px at 100% -10%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 55%);
+  background-attachment: fixed;
+}
+
+.sidebar {
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  border-inline-end: 1px solid var(--border-soft);
+}
+
+.sidebar__logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  background: linear-gradient(150deg, var(--accent), color-mix(in srgb, var(--accent) 55%, #7a5cff));
+  color: var(--accent-text);
+  font-size: 1.25rem;
+  box-shadow: 0 10px 22px -12px color-mix(in srgb, var(--accent) 80%, transparent);
+}
+
+.sidebar__name {
+  letter-spacing: -0.01em;
+}
+
+.nav__item {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.nav__item:hover {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  color: var(--fg);
+}
+
+.nav__item:active {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.nav__item.is-active {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 34%, transparent);
+  color: var(--accent);
+}
+
+html[data-theme="dark"] .nav__item.is-active {
+  color: var(--accent);
+}
+
+.nav__icon {
+  opacity: 0.9;
+}
+
+.chip {
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  border-color: var(--border-soft);
+}
+
+.chip--on {
+  background: color-mix(in srgb, var(--success) 12%, var(--surface));
+  border-color: color-mix(in srgb, var(--success) 45%, transparent);
+}
+
+.chip--off {
+  background: color-mix(in srgb, var(--muted) 8%, var(--surface));
+}
+
+.card {
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(2px);
+}
+
+.card__title {
+  letter-spacing: -0.01em;
+}
+
+.ring__progress {
+  filter: drop-shadow(0 6px 14px color-mix(in srgb, var(--accent) 45%, transparent));
+}
+
+.ring__name {
+  letter-spacing: -0.01em;
+}
+
+.ring__countdown {
+  color: var(--accent);
+  text-shadow: 0 4px 18px color-mix(in srgb, var(--accent) 28%, transparent);
+}
+
+.stat {
+  background: color-mix(in srgb, var(--surface-alt) 80%, var(--surface));
+  border-color: var(--border-soft);
+}
+
+.prayer-card {
+  background: color-mix(in srgb, var(--surface-alt) 82%, var(--surface));
+  border-color: var(--border-soft);
+}
+
+.prayer-card--next {
+  background: linear-gradient(160deg, var(--accent), color-mix(in srgb, var(--accent) 62%, #7a5cff));
+  border-color: transparent;
+  box-shadow: 0 14px 30px -16px color-mix(in srgb, var(--accent) 85%, transparent);
+}
+
+.prayer-card--current {
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+.btn {
+  border-color: var(--border);
+  background: var(--surface);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--fg) 6%, transparent);
+}
+
+.btn:hover {
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  background: color-mix(in srgb, var(--accent) 7%, var(--surface));
+  box-shadow: 0 2px 8px -4px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+.btn:active {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 13%, var(--surface));
+  box-shadow: none;
+}
+
+.btn--accent {
+  background: linear-gradient(150deg, var(--accent), color-mix(in srgb, var(--accent) 70%, #7a5cff));
+  border-color: transparent;
+  box-shadow: 0 12px 26px -14px color-mix(in srgb, var(--accent) 90%, transparent);
+}
+
+.btn--accent:hover {
+  background: linear-gradient(150deg, var(--accent-hover), color-mix(in srgb, var(--accent-hover) 70%, #7a5cff));
+  box-shadow: 0 14px 30px -14px color-mix(in srgb, var(--accent) 90%, transparent);
+}
+
+.btn--accent:active {
+  background: linear-gradient(150deg, var(--accent), color-mix(in srgb, var(--accent) 70%, #7a5cff));
+  box-shadow: 0 8px 18px -12px color-mix(in srgb, var(--accent) 90%, transparent);
+}
+
+/* Park UI solid-variant disabled: keep identity, drop interaction affordances */
+.btn--accent:disabled,
+.btn--accent[disabled] {
+  background: var(--accent);
+  border-color: transparent;
+  box-shadow: none;
+}
+
+/* Park UI 'outside' focusVisibleRing for buttons and nav; the shared
+   --focus-ring (3px inset accent tint) is kept for inputs. */
+.btn:focus-visible,
+.nav__item:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring-outside);
+}
+
+.field__input:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.field__input {
+  background: color-mix(in srgb, var(--surface-alt) 70%, var(--surface));
+  border-color: var(--border-soft);
+}
+
+.fieldset {
+  background: color-mix(in srgb, var(--surface-alt) 45%, transparent);
+}
+
+.choice input {
+  accent-color: var(--accent);
+}
+
+.theme-switch__track {
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.22);
+}
+
+.theme-switch__thumb {
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.28);
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+*:focus-visible {
+  outline-color: var(--accent);
+}
+
+@media (prefers-contrast: more) {
+  .card,
+  .stat,
+  .prayer-card,
+  .field__input {
+    border-color: var(--fg);
+  }
+}
+
+.sidebar__divider {
+  opacity: 0.9;
+}
+
+.sidebar__tag {
+  color: var(--muted);
+}
+
+.nav__label {
+  font-weight: 600;
+}
+
+.nav__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5em;
+  height: 1.5em;
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  color: var(--accent);
+  font-size: 0.95rem;
+  transition: background-color 200ms ease, color 200ms ease;
+}
+
+.nav__item.is-active .nav__icon {
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.nav__item:not(.is-active):hover .nav__icon {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.topbar__accent {
+  background: linear-gradient(to bottom, var(--accent), color-mix(in srgb, var(--accent) 20%, transparent));
+}
+
+.topbar__subtitle {
+  color: var(--muted);
+}
+
+.chip {
+  letter-spacing: 0.01em;
+}
+
+.chip__icon {
+  color: inherit;
+}
+
+.card__head {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-soft);
+  margin-bottom: 16px;
+}
+
+.card--appearance .card__head {
+  border-bottom: none;
+  margin-bottom: 8px;
+  padding-bottom: 0;
+}
+
+.card__meta {
+  color: var(--muted);
+}
+
+.card__hint {
+  line-height: 1.6;
+}
+
+.ring__glow {
+  opacity: 0.9;
+}
+
+.ring__track {
+  stroke: var(--ring-track);
+}
+
+.ring__label {
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+.ring__time {
+  letter-spacing: 0.02em;
+}
+
+.stat {
+  border-radius: var(--radius-ctrl);
+  transition: background-color 200ms ease, border-color 200ms ease;
+}
+
+.stat__label {
+  white-space: nowrap;
+}
+
+.stat__value {
+  font-variant-numeric: tabular-nums;
+}
+
+.stat--player .stat__value,
+.stat--status .stat__value {
+  color: var(--fg);
+}
+
+.prayer-card {
+  border-radius: 14px;
+  transition: transform 200ms ease, box-shadow 200ms ease, background-color 200ms ease,
+    border-color 200ms ease;
+}
+
+.prayer-card:hover {
+  transform: translateY(-2px);
+}
+
+.prayer-card--next:hover {
+  transform: translateY(-2px);
+}
+
+.prayer-card__name {
+  letter-spacing: 0.01em;
+}
+
+.prayer-card__time {
+  letter-spacing: 0.02em;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  transition: background-color 200ms ease, border-color 200ms ease, color 200ms ease,
+    box-shadow 200ms ease, transform 120ms ease, opacity 200ms ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn--accent {
+  color: var(--accent-text);
+}
+
+.btn--accent:disabled {
+  opacity: 0.7;
+}
+
+.field__label {
+  letter-spacing: 0.01em;
+}
+
+.field__input {
+  min-height: 40px;
+  transition: border-color 200ms ease, background-color 200ms ease, box-shadow 200ms ease;
+}
+
+.field__input::placeholder {
+  color: var(--muted);
+  opacity: 0.7;
+}
+
+.fieldset {
+  border-color: var(--border-soft);
+}
+
+.fieldset__legend {
+  letter-spacing: 0.01em;
+}
+
+.choice {
+  padding: 6px 4px;
+  border-radius: 8px;
+  transition: background-color 160ms ease;
+}
+
+.choice:hover {
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+}
+
+.choice input {
+  width: 17px;
+  height: 17px;
+  cursor: pointer;
+}
+
+.theme-switch {
+  transition: opacity 200ms ease;
+}
+
+.theme-switch:hover {
+  opacity: 0.92;
+}
+
+.theme-switch__track {
+  border: 1px solid var(--border-soft);
+}
+
+html[data-theme="dark"] .theme-switch__track {
+  border-color: var(--border);
+}
+
+@media (max-width: 640px) {
+  .card__head {
+    padding-bottom: 10px;
+    margin-bottom: 14px;
+  }
+
+  .btn {
+    min-height: 42px;
+    padding-block: 10px;
+  }
+
+  .field__input {
+    min-height: 42px;
+  }
+}
+
+/* Uiverse save-success animation — Uiverse.io by ilkhoeri
+   (https://uiverse.io/ilkhoeri/chilly-sloth-36, "Saved").
+   The original :hover trigger is replaced by the temporary .is-saving
+   success class so the animation runs exactly once on a successful save
+   click instead of on mouse hover. Keyframes, timing, easing, zoom
+   values and SVG path geometry are the original Uiverse ones, unmodified.
+   This block lives in skins.css (the last loaded sheet) so the container
+   overrides win specificity ties against .btn, .btn--accent and the
+   responsive .button-row .btn / 640px .btn rules in both themes. */
+.btn .save-anim {
+  display: none;
+}
+
+.btn.is-saving {
+  --color: 0 0% 60%;
+  --color-has: 211deg 100% 48%;
+  --sz: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(var(--sz) * 2.5);
+  width: calc(var(--sz) * 2.5);
+  min-height: 0;
+  padding: 0.4rem 0.5rem;
+  border-radius: 0.375rem;
+  border: 0.0625rem solid hsl(var(--color));
+  background: transparent;
+  box-shadow: none;
+  flex: none;
+}
+
+.btn.is-saving .btn__label {
+  display: none;
+}
+
+.btn.is-saving .save-anim {
+  display: block;
+  overflow: visible;
+  height: calc(var(--sz) * 1.75);
+  width: calc(var(--sz) * 1.75);
+  color: hsl(var(--color-has));
+  --ease: cubic-bezier(0.5, 0, 0.25, 1);
+  --zoom-from: 1.75;
+  --zoom-via: 0.75;
+  --zoom-to: 1;
+  --duration: 1s;
+}
+
+.btn.is-saving path[data-path="box"] {
+  transition: all 0.3s var(--ease);
+  animation: has-saved var(--duration) var(--ease) forwards;
+  fill: hsl(var(--color-has) / 0.35);
+}
+
+.btn.is-saving path[data-path="line-top"] {
+  animation: has-saved-line-top var(--duration) var(--ease) forwards;
+}
+
+.btn.is-saving path[data-path="line-bottom"] {
+  animation:
+    has-saved-line-bottom var(--duration) var(--ease) forwards,
+    has-saved-line-bottom-2 calc(var(--duration) * 1) var(--ease)
+      calc(var(--duration) * 0.75);
+}
+
+@keyframes has-saved-line-top {
+  33.333% {
+    transform: rotate(0deg) translate(1px, 2px) scale(var(--zoom-from));
+    d: path("M 3 5 L 3 8 L 3 8");
+  }
+  66.666% {
+    transform: rotate(20deg) translate(2px, -2px) scale(var(--zoom-via));
+  }
+  99.999% {
+    transform: rotate(0deg) translate(0px, 0px) scale(var(--zoom-to));
+  }
+}
+
+@keyframes has-saved-line-bottom {
+  33.333% {
+    transform: rotate(0deg) translate(1px, 2px) scale(var(--zoom-from));
+    d: path("M 17 20 L 17 13 L 7 13 L 7 20");
+  }
+  66.666% {
+    transform: rotate(20deg) translate(2px, -2px) scale(var(--zoom-via));
+  }
+  99.999% {
+    transform: rotate(0deg) translate(0px, 0px) scale(var(--zoom-to));
+    d: path("M 17 21 L 17 21 L 7 21 L 7 21");
+  }
+}
+
+@keyframes has-saved-line-bottom-2 {
+  from {
+    d: path("M 17 21 L 17 21 L 7 21 L 7 21");
+  }
+  to {
+    transform: rotate(0deg) translate(0px, 0px) scale(var(--zoom-to));
+    d: path("M 17 20 L 17 13 L 7 13 L 7 20");
+    fill: white;
+  }
+}
+
+@keyframes has-saved {
+  33.333% {
+    transform: rotate(0deg) translate(1px, 2px) scale(var(--zoom-from));
+  }
+  66.666% {
+    transform: rotate(20deg) translate(2px, -2px) scale(var(--zoom-via));
+  }
+  99.999% {
+    transform: rotate(0deg) translate(0px, 0px) scale(var(--zoom-to));
+  }
+}

@@ -1,0 +1,13 @@
+# Win7 test toolchain (Phase 30B-2) — side-by-side environment, NOT for production.
+# Target: Windows 7 SP1 x64. Interpreter: Python 3.8.10 x64 (last Python supporting Win7).
+# Venv: win7\venv (built from win7\python). Test EXE output: win7\dist-test\.
+pyinstaller==5.13.2
+Pillow==10.4.0
+pystray==0.19.5
+altgraph==0.17.5
+pefile==2023.2.7
+pywin32-ctypes==0.2.2
+pyinstaller-hooks-contrib==2024.8
+packaging==24.2
+setuptools==69.5.1
+six==1.17.0

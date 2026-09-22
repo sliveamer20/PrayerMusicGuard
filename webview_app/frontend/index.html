@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>صلاة وسكون</title>
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/skins.css" />
+  <style>
+    .dropdown-wrapper { position: relative; flex: 1; min-width: 0; }
+    .custom-dropdown { position: absolute; inset-inline-start: 0; inset-inline-end: 0; top: calc(100% + 6px); z-index: 1000; max-height: 320px; overflow: auto; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.12); padding: 6px; }
+    .custom-dropdown.hidden { display: none; }
+    .dropdown-item { padding: 8px 10px; border-radius: 8px; cursor: pointer; display: grid; grid-template-rows: auto auto; gap: 2px; color: var(--fg); }
+    .dropdown-item:hover, .dropdown-item.is-active { background: var(--surface-alt); }
+    .dropdown-item__name { font-weight: 600; font-size: 0.95rem; }
+    .dropdown-item__path { font-size: 0.78rem; opacity: 0.7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; direction: ltr; }
+    .dropdown-empty { padding: 12px; text-align: center; opacity: 0.7; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="sidebar__brand">
+        <span class="sidebar__logo"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" /></svg></span>
+        <div class="sidebar__meta">
+          <p class="sidebar__name">صلاة وسكون</p>
+          <p class="sidebar__tag">حماية الموسيقى وقت الصلاة</p>
+        </div>
+      </div>
+
+      <div class="sidebar__divider" aria-hidden="true"></div>
+
+      <nav class="nav" aria-label="التنقل">
+        <button class="nav__item is-active" type="button" data-page="dashboard">
+          <span class="nav__icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1" /><rect width="7" height="5" x="14" y="3" rx="1" /><rect width="7" height="9" x="14" y="12" rx="1" /><rect width="7" height="5" x="3" y="16" rx="1" /></svg></span><span class="nav__label">لوحة القيادة</span>
+        </button>
+        <button class="nav__item" type="button" data-page="times">
+          <span class="nav__icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6v6l4 2" /><circle cx="12" cy="12" r="10" /></svg></span><span class="nav__label">المواقيت</span>
+        </button>
+        <button class="nav__item" type="button" data-page="music">
+          <span class="nav__icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></svg></span><span class="nav__label">المشغّل</span>
+        </button>
+        <button class="nav__item" type="button" data-page="settings">
+          <span class="nav__icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915" /><circle cx="12" cy="12" r="3" /></svg></span><span class="nav__label">الإعدادات</span>
+        </button>
+      </nav>
+
+      <div class="sidebar__footer">
+        <div class="sidebar__divider sidebar__divider--footer" aria-hidden="true"></div>
+        <span>الإصدار <span id="app-version">—</span></span>
+        <div style="margin-top:6px; font-size:0.8em; opacity:0.8;">اسم مبرمج البرنامج: أيمن علاء أبو ليلة</div>
+        <a class="uv-wa" href="https://wa.me/201010101182" target="_blank" rel="noopener noreferrer" title="مراسلة المطور عبر واتساب" aria-label="مراسلة المطور عبر واتساب">
+          <p>WhatsApp</p>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.611-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.263.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+          </svg>
+        </a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar__titles">
+          <span class="topbar__accent" aria-hidden="true"></span>
+          <h1 class="topbar__title" id="page-title">لوحة القيادة</h1>
+          <p class="topbar__subtitle" id="page-subtitle">نظرة سريعة على الصلاة القادمة وحالة المراقبة.</p>
+        </div>
+        <div class="topbar__actions">
+          <span class="chip chip--off" id="monitor-chip"><span class="chip__icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 2 20 20" /><path d="M8.35 2.69A10 10 0 0 1 21.3 15.65" /><path d="M19.08 19.08A10 10 0 1 1 4.92 4.92" /></svg></span><span class="chip__text">المراقبة متوقفة</span></span>
+          <label class="theme-switch" for="theme-checkbox" aria-label="تبديل الوضع الداكن">
+            <input type="checkbox" id="theme-checkbox" class="theme-switch__input" />
+            <span class="theme-switch__track">
+              <span class="theme-switch__thumb">
+                <svg class="theme-switch__icon theme-switch__icon--sun" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="4" />
+                  <g stroke-linecap="round">
+                    <path d="M12 2v2" />
+                    <path d="M12 20v2" />
+                    <path d="m4.93 4.93 1.41 1.41" />
+                    <path d="m17.66 17.66 1.41 1.41" />
+                    <path d="M2 12h2" />
+                    <path d="M20 12h2" />
+                    <path d="m6.34 17.66-1.41 1.41" />
+                    <path d="m19.07 4.93-1.41 1.41" />
+                  </g>
+                </svg>
+                <svg class="theme-switch__icon theme-switch__icon--moon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" />
+                </svg>
+              </span>
+            </span>
+          </label>
+        </div>
+        <div class="topbar__countdown">
+          <span class="chip chip--info" id="resume-countdown" style="display:none;"></span>
+        </div>
+      </header>
+
+      <section class="page is-active" id="page-dashboard">
+        <div class="hero card card--hero">
+          <div class="ring">
+            <svg class="ring__svg" viewBox="0 0 200 200" aria-hidden="true">
+              <circle class="ring__track" cx="100" cy="100" r="88" />
+              <circle class="ring__progress" id="ring-progress" cx="100" cy="100" r="88" />
+            </svg>
+            <span class="ring__glow" aria-hidden="true"></span>
+            <div class="ring__center">
+              <span class="ring__label">الصلاة القادمة</span>
+              <span class="ring__name" id="next-prayer-name">—</span>
+              <span class="ring__time" id="next-prayer-time">--:--</span>
+              <span class="ring__countdown" id="next-prayer-countdown">00:00:00</span>
+            </div>
+          </div>
+
+          <div class="hero__side">
+            <div class="stat stat--player">
+              <span class="stat__label">المشغّل</span>
+              <span class="stat__value" id="player-line">لم يتم الاختيار</span>
+            </div>
+            <div class="stat stat--status">
+              <span class="stat__label">حالة المشغّل</span>
+              <span class="stat__value" id="player-status-line">—</span>
+            </div>
+            <div class="stat stat--media">
+              <span class="stat__label">حالة الوسائط</span>
+              <span class="stat__value" id="pause-state">تعمل</span>
+            </div>
+            <div class="button-row">
+              <button class="btn btn--accent" id="btn-pause" type="button">إيقاف مؤقت</button>
+              <button class="btn" id="btn-resume" type="button">استئناف الآن</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card--today">
+          <div class="card__head">
+            <h2 class="card__title">مواقيت اليوم</h2>
+            <span class="card__meta" id="location-line"></span>
+          </div>
+<div class="prayer-grid" id="prayer-grid"></div>
+            <p class="card__hint" id="dashboard-status"></p>
+          </div>
+      </section>
+
+      <section class="page" id="page-times">
+        <div class="card card--times">
+          <div class="card__head">
+            <h2 class="card__title">مواقيت الصلاة</h2>
+            <span class="card__meta" id="times-location">—</span>
+          </div>
+          <p class="card__hint">الوقت يُعرض ويُعدّل بنظام 12 ساعة (HH:MM ص/م).</p>
+          <div class="field-grid" id="times-editor"></div>
+          <div class="button-row">
+            <button class="btn btn--accent" id="btn-save-times" type="button"><span class="btn__label">حفظ المواقيت</span><svg class="save-anim" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" stroke-linejoin="round" stroke-linecap="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="m19,21H5c-1.1,0-2-.9-2-2V5c0-1.1.9-2,2-2h11l5,5v11c0,1.1-.9,2-2,2Z" stroke-linejoin="round" stroke-linecap="round" data-path="box"></path><path d="M7 3L7 8L15 8" stroke-linejoin="round" stroke-linecap="round" data-path="line-top"></path><path d="M17 20L17 13L7 13L7 20" stroke-linejoin="round" stroke-linecap="round" data-path="line-bottom"></path></svg></button>
+            <button class="btn" id="btn-fetch-times" type="button">جلب المواقيت</button>
+          </div>
+          <p class="card__hint" id="times-status"></p>
+        </div>
+
+        <div class="card card--location">
+          <div class="card__head">
+            <h2 class="card__title">حساب المواقيت والموقع</h2>
+          </div>
+          <div class="choice-list uv-radio-list">
+            <label class="choice"><span class="checkbox-container"><input type="radio" name="location_mode" value="auto" /><span class="checkmark"></span></span> تحديد الموقع تلقائيًا عبر الإنترنت</label>
+            <label class="choice"><span class="checkbox-container"><input type="radio" name="location_mode" value="manual" /><span class="checkmark"></span></span> إدخال الموقع يدويًا</label>
+          </div>
+          <div id="manual-fields" style="display:none;">
+            <div class="field-grid">
+              <div class="field">
+                <span class="field__label">الدولة</span>
+                <div class="combobox" id="country-combobox">
+                  <input class="combobox__input" id="set-country" type="text" placeholder="اختر الدولة" autocomplete="off" />
+                  <button type="button" class="combobox__arrow" aria-label="فتح القائمة"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></button>
+                  <div class="combobox__menu is-hidden">
+                    <ul class="combobox__list"></ul>
+                  </div>
+                </div>
+              </div>
+              <div class="field">
+                <span class="field__label">المدينة</span>
+                <div class="combobox" id="city-combobox">
+                  <input class="combobox__input" id="set-city" type="text" placeholder="اختر الدولة أولًا" autocomplete="off" disabled />
+                  <button type="button" class="combobox__arrow" aria-label="فتح القائمة" disabled><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></button>
+                  <div class="combobox__menu is-hidden">
+                    <ul class="combobox__list"></ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            </div>
+            <div class="button-row">
+              <button class="btn btn--accent" id="btn-fetch-location" type="button">جلب المواقيت</button>
+            </div>
+            <p class="card__hint" id="location-status"></p>
+            <p class="card__hint" id="location-resolved" style="display:none;"></p>
+          </div>
+      </section>
+
+      <section class="page" id="page-music">
+        <div class="card card--music">
+          <div class="card__head">
+            <h2 class="card__title">التحكم بالمشغّل</h2>
+          </div>
+          <div class="field-grid">
+            <div class="field">
+              <span class="field__label">مشغّل الموسيقى</span>
+              <div class="dropdown-wrapper">
+                <div style="display:flex; gap:8px;">
+                  <input class="field__input" id="set-music" type="text" dir="ltr" style="flex:1; min-width:0;" autocomplete="off" />
+                  <button class="btn" id="btn-dropdown-music" type="button" title="التطبيقات الجارية"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></button>
+                  <button class="btn" id="btn-browse-music" type="button">تصفح…</button>
+                </div>
+                <div id="dropdown-music" class="custom-dropdown hidden" role="listbox" aria-label="التطبيقات الجارية للمشغّل"></div>
+              </div>
+            </div>
+            <div class="field">
+              <span class="field__label">برنامج المؤذن (مستثنى)</span>
+              <div class="dropdown-wrapper">
+                <div style="display:flex; gap:8px;">
+                  <input class="field__input" id="set-adhan" type="text" dir="ltr" style="flex:1; min-width:0;" autocomplete="off" />
+                  <button class="btn" id="btn-dropdown-adhan" type="button" title="التطبيقات الجارية"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></button>
+                  <button class="btn" id="btn-browse-adhan" type="button">تصفح…</button>
+                </div>
+                <div id="dropdown-adhan" class="custom-dropdown hidden" role="listbox" aria-label="التطبيقات الجارية للمؤذن"></div>
+              </div>
+            </div>
+          </div>
+
+          <fieldset class="fieldset uv-radio-list">
+            <legend class="fieldset__legend">طريقة الإيقاف</legend>
+            <label class="choice"><span class="checkbox-container"><input type="radio" name="method" value="suspend" /><span class="checkmark"></span></span> إيقاف مباشر للمشغّل (APPCOMMAND)</label>
+            <label class="choice"><span class="checkbox-container"><input type="radio" name="method" value="media" /><span class="checkmark"></span></span> زر الوسائط العام (Play/Pause)</label>
+          </fieldset>
+
+          <div class="button-row">
+            <button class="btn btn--accent" id="btn-pause-2" type="button">إيقاف مؤقت</button>
+            <button class="btn" id="btn-resume-2" type="button">استئناف الآن</button>
+            <button class="btn" id="btn-save-music" type="button"><span class="btn__label">حفظ إعدادات المشغّل</span><svg class="save-anim" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" stroke-linejoin="round" stroke-linecap="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="m19,21H5c-1.1,0-2-.9-2-2V5c0-1.1.9-2,2-2h11l5,5v11c0,1.1-.9,2-2,2Z" stroke-linejoin="round" stroke-linecap="round" data-path="box"></path><path d="M7 3L7 8L15 8" stroke-linejoin="round" stroke-linecap="round" data-path="line-top"></path><path d="M17 20L17 13L7 13L7 20" stroke-linejoin="round" stroke-linecap="round" data-path="line-bottom"></path></svg></button>
+          </div>
+          <p class="card__hint" id="music-status"></p>
+        </div>
+      </section>
+
+      <section class="page" id="page-settings">
+        <div class="card card--settings">
+          <div class="card__head">
+            <h2 class="card__title">المراقبة والإعدادات العامة</h2>
+          </div>
+
+          <div class="field-grid">
+            <label class="field">
+              <span class="field__label">مدة الإيقاف (دقائق)</span>
+              <input class="field__input" id="set-minutes" type="number" min="1" max="180" />
+            </label>
+          </div>
+
+          <div class="choice-list uv-choice-list">
+            <label class="choice"><span class="container"><input type="checkbox" id="set-enabled" /><span class="checkmark"></span></span> تفعيل المراقبة في الخلفية</label>
+            <label class="choice"><span class="container"><input type="checkbox" id="set-announce" /><span class="checkmark"></span></span> تشغيل صوت الأذان عند الصلاة</label>
+            <label class="choice"><span class="container"><input type="checkbox" id="set-autostart" /><span class="checkmark"></span></span> التشغيل التلقائي مع بدء ويندوز</label>
+          </div>
+
+          <div class="button-row">
+            <button class="btn btn--accent" id="btn-save" type="button"><span class="btn__label">حفظ الإعدادات</span><svg class="save-anim" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" stroke-linejoin="round" stroke-linecap="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="m19,21H5c-1.1,0-2-.9-2-2V5c0-1.1.9-2,2-2h11l5,5v11c0,1.1-.9,2-2,2Z" stroke-linejoin="round" stroke-linecap="round" data-path="box"></path><path d="M7 3L7 8L15 8" stroke-linejoin="round" stroke-linecap="round" data-path="line-top"></path><path d="M17 20L17 13L7 13L7 20" stroke-linejoin="round" stroke-linecap="round" data-path="line-bottom"></path></svg></button>
+            <button class="btn" id="btn-refresh-state" type="button">تحديث الحالة</button>
+          </div>
+          <p class="card__hint" id="settings-status"></p>
+        </div>
+
+        <div class="card card--appearance">
+          <div class="card__head">
+            <h2 class="card__title">المظهر</h2>
+          </div>
+          <p class="card__hint">استخدم مفتاح الشمس/القمر في الأعلى للتبديل بين الوضع الفاتح والداكن. يتم الحفظ تلقائيًا.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/theme.js"></script>
+  <script src="js/app.js"></script>
+  <div id="bridge-diag" style="display:none;" aria-hidden="true"></div>
+</body>
+</html>

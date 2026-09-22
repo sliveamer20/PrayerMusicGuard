@@ -1,0 +1,1162 @@
+.app {
+  display: grid;
+  grid-template-columns: 264px 1fr;
+  min-height: 100vh;
+}
+
+/* Icon utility — plain-CSS port of Park UI's Icon recipe
+   (github.com/chakra-ui/park-ui). Park UI's recipe is:
+     color: currentcolor; display: inline-block; flex-shrink: 0;
+     vertical-align: middle; line-height: 1em
+   with a token boxSize scale (3 / 4 / 4.5 / 5 / 5.5 / 6).
+   This app has no Panda tokens, so the scale is expressed in em relative
+   to each icon's own context font-size, which keeps every icon anchored to
+   the same em-based scale the rest of the controls already use (see the
+   .uv-wa button for the same pattern). That makes icons inherit theme text
+   color via currentColor and mirror under dir="rtl" for free.
+   Scope: opt-in via class="icon" on inline Lucide-style SVGs only.
+   Every selector below is prefixed with .icon so the frozen UI
+   (.uv-wa, .card__hint, .uv-choice-list, radios, alerts) is untouched. */
+.icon {
+  display: inline-block;
+  flex-shrink: 0;
+  color: currentColor;
+  line-height: 1em;
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+}
+
+.sidebar__logo .icon {
+  width: 1.4em;
+  height: 1.4em;
+}
+
+.nav__icon .icon {
+  width: 1.2em;
+  height: 1.2em;
+}
+
+.combobox__arrow .icon,
+#btn-dropdown-music .icon,
+#btn-dropdown-adhan .icon {
+  width: 1.15em;
+  height: 1.15em;
+}
+
+.chip .icon {
+  width: 1em;
+  height: 1em;
+}
+
+.sidebar {
+  background: var(--surface);
+  border-inline-end: 1px solid var(--border-soft);
+  padding: 24px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  transition: background-color var(--transition-theme), border-color var(--transition-theme);
+}
+
+.sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sidebar__logo {
+  font-size: 1.8rem;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.sidebar__name {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.sidebar__tag {
+  margin: 2px 0 0;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.nav__item {
+  appearance: none;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--fg);
+  border-radius: var(--radius-ctrl);
+  padding: 11px 14px;
+  font: inherit;
+  font-weight: 600;
+  text-align: start;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
+}
+
+.nav__item:hover {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.nav__item:active {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.nav__item.is-active {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+.nav__item:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring-outside);
+}
+
+.nav__icon {
+  font-size: 1rem;
+  width: 1.2em;
+  text-align: center;
+}
+
+.sidebar__footer {
+  margin-top: auto;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.main {
+  padding: 26px 30px 48px;
+  min-width: 0;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.topbar__title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.topbar__subtitle {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  order: 1;
+}
+
+.topbar__countdown {
+  width: 100%;
+  margin-top: 8px;
+  order: 2;
+}
+
+.searchable {
+  position: relative;
+}
+.searchable__list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 320px;
+  overflow: auto;
+  margin: 4px 0 0 0;
+  padding: 0;
+  list-style: none;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  z-index: 1000;
+}
+.searchable__list li {
+  padding: 8px 12px;
+  cursor: pointer;
+  text-align: right;
+  color: var(--text);
+}
+.searchable__list li:hover,
+.searchable__list li.is-active {
+  background: var(--accent-soft);
+}
+.searchable__list.is-hidden {
+  display: none;
+}
+
+.combobox {
+  position: relative;
+  width: 100%;
+}
+.combobox__input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 44px 12px 14px;
+  background: var(--card-bg);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  outline: none;
+  font-size: 0.95rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.combobox__input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+.combobox__arrow {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  /* Compact icon control (Park UI IconButton, xs): square hit area, no
+     padding, icon centered by flex. font-size stays 0.9em so the Lucide
+     chevron keeps its 1.15em box from the .icon scale. */
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  font-size: 0.9em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+.combobox__arrow:hover {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+.combobox__arrow:active {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+}
+.combobox__arrow:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.combobox__arrow:disabled:hover {
+  background: transparent;
+  color: var(--muted);
+}
+.combobox__menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  max-height: 320px;
+  overflow: auto;
+  z-index: 1000;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+}
+.combobox__menu.is-hidden {
+  display: none;
+}
+.combobox__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.combobox__list li {
+  padding: 8px 12px;
+  cursor: pointer;
+  text-align: right;
+  color: var(--text);
+}
+.combobox__list li:hover,
+.combobox__list li.is-active {
+  background: var(--accent-soft);
+}
+
+/* Status chip — Park UI Badge pattern: compact inline-flex pill with a
+   balanced icon + label pair. Park UI's Badge is inline-flex, center, gap 1
+   (4px) with a full pill radius; here the gap is 6px so the Lucide icon
+   (1em) and the Arabic label keep optical balance at 0.82rem. The icon and
+   text live in dedicated spans (.chip__icon / .chip__text) so the monitor
+   logic can rebuild either without touching structure. */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.chip__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+.chip__text {
+  white-space: nowrap;
+}
+
+.chip--on {
+  color: var(--success);
+  border-color: var(--success);
+}
+
+.chip--off {
+  color: var(--muted);
+}
+
+.dropdown {
+  position: relative;
+  width: 100%;
+}
+.dropdown__trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: right;
+}
+.dropdown__trigger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.dropdown__value {
+  flex: 1;
+  text-align: right;
+}
+.dropdown__arrow {
+  margin-left: 8px;
+  font-size: 0.8em;
+}
+.dropdown__menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  max-height: 300px;
+  overflow: hidden;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.dropdown__menu.is-hidden {
+  display: none;
+}
+.dropdown__search {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 12px;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  background: var(--card-bg);
+  outline: none;
+}
+.dropdown__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-height: 240px;
+  overflow: auto;
+}
+.dropdown__list li {
+  padding: 8px 12px;
+  cursor: pointer;
+  text-align: right;
+}
+.dropdown__list li:hover,
+.dropdown__list li.is-active {
+  background: var(--accent-soft);
+}
+
+.page {
+  display: none;
+}
+
+.page.is-active {
+  display: block;
+  animation: fade-in 220ms ease;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-card);
+  padding: 22px;
+  box-shadow: var(--shadow);
+  margin-bottom: 20px;
+  transition: background-color var(--transition-theme), border-color var(--transition-theme);
+}
+
+.card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.card__title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.card__meta {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.card__hint {
+  margin: 12px 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: normal;
+  overflow: hidden;
+}
+
+.card__hint.is-success,
+.card__hint.is-warning,
+.card__hint.is-error,
+.card__hint.is-info {
+  display: flex;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: var(--radius-ctrl, 8px);
+  border: 1px solid;
+  border-inline-start: 4px solid;
+  font-weight: 600;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  color: var(--fg);
+  transition: background-color 300ms ease-in-out, transform 300ms ease-in-out,
+              border-color 300ms ease-in-out;
+  will-change: transform;
+}
+
+.card__hint.is-success::before,
+.card__hint.is-warning::before,
+.card__hint.is-error::before,
+.card__hint.is-info::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 1.15em;
+  height: 1.15em;
+  margin-inline-end: 8px;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13 16h-1v-4h1m0-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13 16h-1v-4h1m0-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.card__hint.is-success { border-color: color-mix(in srgb, var(--success) 55%, transparent); border-inline-start-color: var(--success); background: color-mix(in srgb, var(--success) 14%, transparent); color: color-mix(in srgb, var(--success) 78%, var(--fg)); }
+.card__hint.is-warning { border-color: color-mix(in srgb, var(--warning) 55%, transparent); border-inline-start-color: var(--warning); background: color-mix(in srgb, var(--warning) 16%, transparent); color: color-mix(in srgb, var(--warning) 82%, var(--fg)); }
+.card__hint.is-error   { border-color: color-mix(in srgb, var(--error) 55%, transparent);   border-inline-start-color: var(--error);   background: color-mix(in srgb, var(--error) 13%, transparent);   color: color-mix(in srgb, var(--error) 78%, var(--fg)); }
+.card__hint.is-info    { border-color: color-mix(in srgb, var(--accent) 55%, transparent);  border-inline-start-color: var(--accent);  background: color-mix(in srgb, var(--accent) 13%, transparent);  color: color-mix(in srgb, var(--accent) 78%, var(--fg)); }
+
+.card__hint.is-success:hover { background: color-mix(in srgb, var(--success) 24%, transparent); transform: scale(1.05); }
+.card__hint.is-warning:hover { background: color-mix(in srgb, var(--warning) 26%, transparent); transform: scale(1.05); }
+.card__hint.is-error:hover   { background: color-mix(in srgb, var(--error) 23%, transparent);   transform: scale(1.05); }
+.card__hint.is-info:hover    { background: color-mix(in srgb, var(--accent) 23%, transparent);  transform: scale(1.05); }
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(200px, 260px) 1fr;
+  gap: 28px;
+  align-items: center;
+}
+
+.ring {
+  position: relative;
+  width: 100%;
+  max-width: 260px;
+  margin: 0 auto;
+  aspect-ratio: 1 / 1;
+}
+
+.ring__svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.ring__track {
+  fill: none;
+  stroke: var(--ring-track);
+  stroke-width: 10;
+}
+
+.ring__progress {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 10;
+  stroke-linecap: round;
+  stroke-dasharray: 552.92;
+  stroke-dashoffset: 552.92;
+  transition: stroke-dashoffset 600ms ease;
+}
+
+.ring__center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  text-align: center;
+  padding: 12%;
+}
+
+.ring__label {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.ring__name {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.ring__time {
+  font-size: 0.95rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.ring__countdown {
+  font-size: 1.7rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+  letter-spacing: 0.03em;
+}
+
+.hero__side {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 14px;
+  background: var(--surface-alt);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-ctrl);
+  min-width: 0;
+  width: 100%;
+}
+
+.stat__label {
+  font-size: 0.85rem;
+  color: var(--muted);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.stat__value {
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: end;
+  max-width: 100%;
+  min-width: 0;
+  flex-shrink: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow-wrap: break-word;
+  word-break: break-all;
+}
+
+.prayer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+}
+
+.prayer-card {
+  background: var(--surface-alt);
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  transition: background-color var(--transition-theme), border-color var(--transition-theme),
+    transform 200ms ease;
+}
+
+.prayer-card--current {
+  border-color: var(--accent);
+}
+
+.prayer-card--next {
+  background: var(--accent);
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.prayer-card--next .prayer-card__name,
+.prayer-card--next .prayer-card__time,
+.prayer-card--next .prayer-card__tag {
+  color: var(--accent-text);
+}
+
+.prayer-card__name {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.prayer-card__time {
+  font-size: 1.15rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.prayer-card__tag {
+  font-size: 0.72rem;
+  min-height: 1em;
+  color: var(--muted);
+}
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+/* Button — plain-CSS port of Park UI's Button recipe
+   (github.com/chakra-ui/park-ui, packages/preset/src/recipes/button.ts).
+   The recipe's base is: inline-flex, items centered, justify centered,
+   font-weight semibold, a consistent gap for icon+label, white-space nowrap,
+   appearance none, and a colors transition (background-color, border-color,
+   color, box-shadow). This keeps the project's existing padding (10px 18px),
+   --radius-ctrl and 40px min-height so no .button-row grid reflows; the
+   em-anchored control scale is unchanged. States (hover/active/disabled)
+   live in skins.css and use only existing theme tokens. */
+.btn {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--fg);
+  border-radius: var(--radius-ctrl);
+  padding: 10px 18px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+  transition: background-color 200ms ease, border-color 200ms ease,
+              color 200ms ease, box-shadow 200ms ease, opacity 200ms ease;
+}
+
+.btn:hover {
+  border-color: var(--accent);
+}
+
+/* Park UI focusVisibleRing 'outside': box-shadow ring, not an outline, so it
+   never clips to the control's content and stays visible on both themes. */
+.btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring-outside);
+}
+
+.btn--accent {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+
+.btn--accent:hover {
+  background: var(--accent-hover);
+}
+
+.btn--accent:active {
+  background: var(--accent);
+}
+
+.btn:active {
+  border-color: var(--accent);
+}
+
+/* Compact IconButton (Park UI IconButton = Button with px:0/py:0 and a
+   square box) for the two icon-only dropdown triggers. Fixed 40px height
+   keeps a square hit area; align-self centers it against the 40px+ text
+   buttons and inputs in the same flex row. */
+#btn-dropdown-music,
+#btn-dropdown-adhan {
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  flex: none;
+  align-self: center;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field__label {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.field__input {
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--fg);
+  border-radius: var(--radius-ctrl);
+  padding: 9px 12px;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+}
+
+.field__input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.fieldset {
+  border: 1px solid var(--border-soft);
+  border-radius: 12px;
+  padding: 12px 16px 14px;
+  margin: 16px 0;
+}
+
+.fieldset__legend {
+  padding: 0 6px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.choice-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 14px 0;
+}
+
+.choice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.92rem;
+  cursor: pointer;
+}
+
+/* Uiverse checkbox — Uiverse.io by SelfMadeSystem.
+   Scoped to .uv-choice-list (Settings only) so radios and other .choice
+   controls keep their native styling. Colors adapted to PMG theme tokens;
+   shape, checkmark geometry and transitions are the original ones.
+   font-size:13px keeps the 1.3em box at the former 17px native footprint. */
+.uv-choice-list .container {
+  display: block;
+  position: relative;
+  cursor: pointer;
+  font-size: 13px;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  flex: none;
+}
+
+/* Hide the default checkbox */
+.uv-choice-list .container input {
+  display: none;
+}
+
+/* Create a custom checkbox.
+   display:inline-block is required: .checkmark is a <span> and would otherwise
+   stay display:inline, where width/height do not apply, collapsing the box to
+   0x0 so the accent background and the rotated checkmark never paint
+   (Phase 20.36 root cause). inline-block blockifies it while keeping it on the
+   label's text baseline, so the 1.3em box and the ::after checkmark render. */
+.uv-choice-list .checkmark {
+  display: inline-block;
+  position: relative;
+  top: 0;
+  left: 0;
+  height: 1.3em;
+  width: 1.3em;
+  background-color: transparent;
+  border-radius: 0.25em;
+  transition: all 0.25s;
+}
+
+/* When the checkbox is checked, add an accent background */
+.uv-choice-list .container input:checked ~ .checkmark {
+  background-color: var(--accent);
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.uv-choice-list .checkmark:after {
+  content: "";
+  position: absolute;
+  transform: rotate(0deg);
+  border: 0.1em solid var(--border);
+  left: 0;
+  top: 0;
+  width: 1.05em;
+  height: 1.05em;
+  border-radius: 0.25em;
+  transition: all 0.25s, border-width 0.1s;
+}
+
+/* Show the checkmark when checked */
+.uv-choice-list .container input:checked ~ .checkmark:after {
+  left: 0.45em;
+  top: 0.25em;
+  width: 0.25em;
+  height: 0.5em;
+  border-color: #fff0 var(--accent-text) var(--accent-text) #fff0;
+  border-width: 0 0.15em 0.15em 0;
+  border-radius: 0em;
+  transform: rotate(45deg);
+}
+
+/* Uiverse radio — Uiverse.io by Ahmedosman980.
+   Scoped to .uv-radio-list (the 4 target radios only: location_mode auto/manual
+   and method suspend/media) so the Phase 20.31 checkboxes (.uv-choice-list)
+   and every other .choice control keep their existing styling.
+   Colors adapted to PMG theme tokens; shape, inner dot, shadow geometry and
+   transitions are the original ones. */
+.uv-radio-list .checkbox-container {
+  display: inline-block;
+  position: relative;
+  width: 34px;
+  height: 34px;
+  cursor: pointer;
+  user-select: none;
+  flex: none;
+}
+
+.uv-radio-list .checkbox-container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.uv-radio-list .checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--surface-alt);
+  border-radius: 50%;
+  box-shadow:
+    0 4px 8px color-mix(in srgb, var(--fg) 20%, transparent),
+    inset 0 4px 6px rgba(255, 255, 255, 0.5);
+  transition:
+    background-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.uv-radio-list .checkbox-container input:checked ~ .checkmark {
+  background-color: var(--accent);
+  box-shadow:
+    inset 0 6px 12px color-mix(in srgb, var(--fg) 20%, transparent),
+    0 4px 8px color-mix(in srgb, var(--fg) 10%, transparent);
+}
+
+.uv-radio-list .checkbox-container input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.uv-radio-list .checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+  top: 50%;
+  left: 50%;
+  width: 9px;
+  height: 9px;
+  background-color: var(--accent-text);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.3s ease;
+}
+
+.uv-radio-list .checkbox-container input:checked ~ .checkmark:after {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* Uiverse WhatsApp button — Uiverse.io by alshahwan.
+   Scoped to .uv-wa only; every selector below is prefixed so no other
+   button, <p> or <svg> in the app is affected.
+   Adapted from the provided design:
+     - background #fff -> var(--surface) so it does not glare in dark theme
+       (identical to #ffffff in light, so light is unchanged);
+     - physical left/right -> logical inset-inline-* so the composition
+       mirrors correctly under dir="rtl";
+     - brand green #25D366 is retained as the button's own token;
+      - font-size is the single scale anchor: the reference 17px made the
+        6.2em x 2em button render 105 x 34px, which overwhelmed the narrow
+        sidebar footer. 12px anchors it to the footer's own 0.78rem text
+        scale (74.4 x 24px) with every em-based offset, transition and hover
+        step preserved at identical proportion.
+      - width 6.2em -> 7em: at 12px the "WhatsApp" glyphs hint slightly
+        wider than at 17px (4.59em vs 4.28em), so the content stack
+        (0.5em pad + 4.59em label + 1em icon + 0.5em pad = 6.59em) no
+        longer fit the original 6.2em box and the fading SVG painted over
+        the label's first glyphs by 6.72px on hover. 7em (84px) restores
+        ~2.9px clearance while keeping the button compact in the footer.
+    Shape, hover animation, transitions and SVG behavior are the original ones. */
+.uv-wa {
+  --wa: #25D366;
+  display: inline-block;
+  background-color: var(--surface);
+  border: 1px solid var(--wa);
+  padding: 5px;
+  position: relative;
+  width: 7em;
+  height: 2em;
+  transition: 0.5s;
+  font-size: 12px;
+  border-radius: 0.4em;
+  text-decoration: none;
+  cursor: pointer;
+  flex: none;
+}
+
+.uv-wa p {
+  position: absolute;
+  top: 0.4em;
+  inset-inline-start: 1.15em;
+  margin: 0;
+  padding: 0;
+  transition: .5s;
+  color: var(--wa);
+}
+
+.uv-wa svg {
+  position: absolute;
+  top: 0.45em;
+  inset-inline-end: 0.5em;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  transition: 0.5s;
+  height: 1em;
+  fill: #fff;
+}
+
+.uv-wa:hover p {
+  inset-inline-start: 0.5em;
+  color: #fff;
+}
+
+.uv-wa:hover svg {
+  opacity: 1;
+}
+
+.uv-wa:hover {
+  background-color: var(--wa);
+}
+
+.uv-wa:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.theme-switch {
+  --switch-w: 84px;
+  --switch-h: 42px;
+  --thumb-size: 34px;
+  display: block;
+  width: var(--switch-w);
+  height: var(--switch-h);
+  cursor: pointer;
+  position: relative;
+  flex: none;
+}
+
+.theme-switch__input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.theme-switch__track {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--track-bg);
+  border-radius: 999px;
+  position: relative;
+  transition: background-color var(--transition-theme);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.18);
+}
+
+.theme-switch__thumb {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: var(--thumb-size);
+  height: var(--thumb-size);
+  border-radius: 50%;
+  background: var(--thumb-bg);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--transition-theme), background-color var(--transition-theme);
+}
+
+html[dir="rtl"] .theme-switch__thumb {
+  right: 4px;
+  left: auto;
+}
+
+.theme-switch__input:checked ~ .theme-switch__track .theme-switch__thumb {
+  transform: translateX(calc(-1 * (var(--switch-w) - var(--thumb-size) - 8px)));
+}
+
+.theme-switch__input:checked ~ .theme-switch__track {
+  background: var(--accent);
+}
+
+.theme-switch__icon {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  transition: opacity 260ms ease, transform 260ms ease;
+}
+
+.theme-switch__icon--sun {
+  fill: var(--icon-sun);
+  stroke: var(--icon-sun);
+  stroke-width: 2;
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+.theme-switch__icon--sun circle {
+  stroke: none;
+}
+
+.theme-switch__icon--moon {
+  fill: var(--icon-moon);
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.5);
+}
+
+.theme-switch__input:checked ~ .theme-switch__track .theme-switch__icon--sun {
+  opacity: 0;
+  transform: rotate(90deg) scale(0.5);
+}
+
+.theme-switch__input:checked ~ .theme-switch__track .theme-switch__icon--moon {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+.theme-switch__input:focus-visible ~ .theme-switch__track {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+@media (max-width: 820px) {
+  .app {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    flex-direction: column;
+    border-inline-end: none;
+    border-bottom: 1px solid var(--border-soft);
+    padding: 16px;
+    gap: 14px;
+  }
+
+  .nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .nav__item {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+
+  .sidebar__footer {
+    display: none;
+  }
+
+  .main {
+    padding: 18px 16px 36px;
+  }
+
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .ring {
+    max-width: 220px;
+  }
+}

@@ -1,0 +1,70 @@
+:root {
+  --bg: #f5f5f7;
+  --surface: #ffffff;
+  --card-bg: #ffffff;
+  --surface-alt: #f2f2f7;
+  --border: #d1d1d6;
+  --border-soft: #e5e5ea;
+  --fg: #000000;
+  --muted: #6d6d70;
+  --accent: #0078d4;
+  --accent-hover: #106ebe;
+  --accent-text: #ffffff;
+  --success: #10b981;
+  --warning: #ffb800;
+  --error: #c42b1c;
+  --ring-track: #d1d1d6;
+  --shadow: 0 12px 32px rgba(24, 36, 72, 0.12);
+  --track-bg: #dfe4f2;
+  --thumb-bg: #ffffff;
+  --icon-sun: #f5a623;
+  --icon-moon: #6b7bd6;
+  --radius-card: 16px;
+  --radius-ctrl: 10px;
+  --transition-theme: 420ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html[data-theme="dark"] {
+  --bg: #202024;
+  --surface: #29292d;
+  --card-bg: #29292d;
+  --surface-alt: #2d2d30;
+  --border: #3d3d42;
+  --border-soft: #323236;
+  --fg: #ffffff;
+  --muted: #a0a0a0;
+  --accent: #4a90e2;
+  --accent-hover: #6bb0ff;
+  --accent-text: #000000;
+  --success: #3fdb9b;
+  --warning: #ffc000;
+  --error: #e7453f;
+  --ring-track: #3d3d42;
+  --shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  --track-bg: #232c44;
+  --thumb-bg: #202024;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, "Noto Naskh Arabic", sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  transition: background-color var(--transition-theme), color var(--transition-theme);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-text);
+}
