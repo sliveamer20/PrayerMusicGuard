@@ -38,6 +38,12 @@ test_phase20_*.py
 test_phase20_*.js
 uat_phase20_*.py
 
+# --- Historical PyInstaller test specs (local only; confirmed historical/unused
+# in Phase 20.54 and removed from the public repo in Phase 20.55). The ACTIVE spec
+# PrayerMusicGuard.spec stays tracked and is intentionally NOT matched here. ---
+PrayerMusicGuard-FIXES-TEST.spec
+PrayerMusicGuard-SPLASH-WARNING.spec
+
 # --- Local agent/AI tooling config (contains provider routing, not app source) ---
 .opencode/
 opencode.json
