@@ -110,6 +110,10 @@ class BackendAPI:
         self._announced_date = ""
         self._scheduler_thread = None
         self._scheduler_stop = threading.Event()
+        # Phase 20.65: set by _update_quit() so the window's close-to-tray
+        # handler (webview_main._on_closing) allows this close for real instead
+        # of hiding the window to the tray.
+        self._allow_close = False
 
     def __getstate__(self):
         state = self.__dict__.copy()
@@ -924,11 +928,17 @@ class BackendAPI:
         Reuses the existing shutdown path: window.destroy() ends
         webview.start(), which returns normally and lets webview_main.run()
         exit the process. Only ever called after launch_installer() succeeded.
+
+        Phase 20.65: window.destroy() now trips the close-to-tray handler,
+        which would hide the window instead of closing it. Setting
+        _allow_close first signals that this close comes from the auto-update
+        flow and must be honored, so the update exit behavior is unchanged.
         """
         window = getattr(self, "_webview_window", None)
         if window is None:
             _log("update quit requested but no window is attached")
             return
+        self._allow_close = True
         try:
             window.destroy()
         except Exception as error:

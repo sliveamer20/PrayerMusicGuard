@@ -62,6 +62,14 @@ PROBE_EXIT_RUNTIME_MISSING = 5
 PROBE_EXIT_INIT_FAILED = 6
 PROBE_EXIT_LOAD_TIMEOUT = 7
 
+# Phase 20.65: close-to-tray. The main window's X button must hide the window
+# to the system tray instead of terminating the process, so monitoring keeps
+# running in the background and the tray icon stays available. This flag is set
+# ONLY by the tray menu's Exit item and by the auto-update quit path, which are
+# the two paths allowed to close the window for real. The closing handler below
+# reads it (see _on_closing).
+_EXITING = [False]
+
 
 def _gui_name() -> str:
     return os.environ.get("PMG_WEBVIEW_GUI", "edgechromium").strip() or "edgechromium"
@@ -189,6 +197,129 @@ def _acquire_single_instance() -> bool:
         return True
 
 
+def _tray_image():
+    """Layered tray-icon loader for the WebView2 path.
+
+    Mirrors main.py's App._tray_image fallback chain (brand PNG -> brand ICO ->
+    generated solid brand-color square) so the tray icon is never silently
+    missing. Returns a PIL Image (pystray needs one), or None only when every
+    layer failed (and PIL itself was importable).
+    """
+    try:
+        from PIL import Image
+    except ImportError:
+        _log("Tray icon unavailable: PIL not importable")
+        return None
+
+    def _open(path):
+        image = Image.open(path)
+        image.load()
+        return image
+
+    candidates = []
+    try:
+        import backend_api
+        main_mod = backend_api._MAIN
+    except Exception:
+        main_mod = None
+    if main_mod is not None:
+        # main.py resolves APP_DIR to sys._MEIPASS in frozen builds and to the
+        # source tree otherwise, so its paths are correct in both modes.
+        for attr in ("PNG_ICON_PATH", "ICON_PATH"):
+            path = getattr(main_mod, attr, None)
+            if path is not None:
+                candidates.append(str(path))
+    # Frozen/source fallbacks relative to the bundled frontend directory.
+    for rel in (
+        os.path.join("..", "..", "assets", "images", "prayer-music-guard.png"),
+        os.path.join("..", "..", "assets", "icons", "prayer_music_guard.ico"),
+    ):
+        candidates.append(os.path.normpath(os.path.join(FRONTEND_DIR, rel)))
+
+    for path in candidates:
+        try:
+            if path and os.path.isfile(path):
+                image = _open(path)
+                _log("Tray icon loaded from: {0}".format(path))
+                return image
+        except Exception as error:
+            _log("Tray icon load failed ({0}): {1}".format(path, error))
+
+    try:
+        _log("Tray icon: using generated solid-color fallback")
+        return Image.new("RGBA", (16, 16), (14, 124, 95, 255))  # brand accent green
+    except Exception as error:
+        _log("Tray icon fallback generation failed: {0}".format(error))
+        return None
+
+
+def _start_tray(window, api):
+    """Create the system tray icon so closing the main window hides it to the
+    tray instead of exiting the process.
+
+    Menu: Open / Pause Monitoring / Exit. Only Exit (and the auto-update quit
+    path) terminate the application; the X button hides the window and keeps
+    PrayerMusicGuard running in the background beside the clock.
+
+    Returns the running pystray.Icon, or None when pystray/PIL or an icon image
+    is unavailable. When None is returned the window's close button keeps its
+    previous behavior (the app exits), because a hidden window with no tray
+    icon would leave the process unreachable.
+    """
+    try:
+        import pystray
+    except ImportError:
+        _log("Tray unavailable: pystray not importable; close will exit the app")
+        return None
+
+    image = _tray_image()
+    if image is None:
+        _log("Tray disabled: no icon image could be loaded or generated")
+        return None
+
+    def _open(icon, item):
+        try:
+            window.show()
+        except Exception as error:
+            _log("Tray open failed: {0}".format(error))
+
+    def _pause_monitoring(icon, item):
+        # Reuses the existing validated save path only; no new control logic.
+        try:
+            enabled = bool(api.get_state().get("enabled", False))
+            api.save_settings({"enabled": not enabled})
+            _log("Monitoring {0} from tray".format("disabled" if enabled else "enabled"))
+        except Exception as error:
+            _log("Tray monitoring toggle failed: {0}".format(error))
+
+    def _exit(icon, item):
+        _log("Tray exit requested; closing application")
+        _EXITING[0] = True
+        try:
+            window.destroy()
+        except Exception as error:
+            _log("Tray window destroy failed: {0}".format(error))
+        try:
+            icon.stop()
+        except Exception:
+            pass
+
+    menu = pystray.Menu(
+        pystray.MenuItem("فتح البرنامج", _open, default=True),
+        pystray.MenuItem("إيقاف المراقبة", _pause_monitoring),
+        pystray.MenuItem("خروج", _exit),
+    )
+    icon = pystray.Icon("PrayerMusicGuard", image, "صلاة وسكون", menu)
+    try:
+        thread = threading.Thread(target=icon.run, name="pmg-tray", daemon=True)
+        thread.start()
+    except Exception as error:
+        _log("Tray icon failed to start: {0}".format(error))
+        return None
+    _log("Tray icon started")
+    return icon
+
+
 def run(ready_file: str | None = None) -> int:
     try:
         import webview
@@ -259,6 +390,34 @@ def run(ready_file: str | None = None) -> int:
             _log("Closed event handler attached")
         except Exception as e:
             _log(f"Failed to attach closed event: {e}")
+
+    # Phase 20.65: close-to-tray. Clicking the window's X button must NOT
+    # terminate PrayerMusicGuard: the window hides to the system tray, the
+    # scheduler keeps monitoring in the background, and the tray icon stays
+    # available beside the clock. Only the tray menu's Exit item and the
+    # auto-update quit path close the window for real.
+    tray = _start_tray(window, api) if api is not None else None
+    if tray is not None:
+        def _on_closing():
+            # _EXITING is set by the tray Exit item; _allow_close is set by the
+            # auto-update quit path. Either allows the real close; every other
+            # close request hides the window to the tray and returns False,
+            # which pywebview reads as "cancel the close".
+            if _EXITING[0] or getattr(api, "_allow_close", False):
+                return None
+            try:
+                window.hide()
+            except Exception as error:
+                _log("hide on close failed: {0}".format(error))
+            _log("Window hidden to tray on close; process stays alive")
+            return False
+        try:
+            window.events.closing += _on_closing
+            _log("Close-to-tray handler attached")
+        except Exception as error:
+            _log(f"Failed to attach closing handler: {error}")
+    else:
+        _log("No tray icon available; window close will exit the app as before")
 
     if ready_file:
         def _mark_ready():

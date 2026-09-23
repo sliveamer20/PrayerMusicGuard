@@ -7,7 +7,7 @@
 A Windows utility that automatically suspends your selected music player at prayer times
 and resumes it when the prayer window ends.
 
-![Version](https://img.shields.io/badge/version-v1.2.9-2f6df6)
+![Version](https://img.shields.io/badge/version-v1.2.10-2f6df6)
 ![Platform](https://img.shields.io/badge/platform-Windows%207%20SP1%20x64%E2%80%9311-2f6df6)
 ![Auto Update](https://img.shields.io/badge/auto%20update-supported-0f9d6e)
 ![License](https://img.shields.io/badge/license-undclared-lightgrey)
@@ -121,7 +121,7 @@ Real captures of the released v1.2.9 application.
 The **installer is the recommended method** for normal users.
 
 1. Open the latest release: **[PrayerMusicGuard releases](https://github.com/sliveamer20/PrayerMusicGuard/releases)**.
-2. Download **`PrayerMusicGuard-Setup.exe`** from the latest release (v1.2.9).
+2. Download **`PrayerMusicGuard-Setup.exe`** from the latest release (v1.2.10).
 3. Run the installer. It installs **per-user**, so **no administrator rights** are
    required.
 4. Launch **صلاة وسكون** from the Start menu.
@@ -254,13 +254,13 @@ The same check is available from the tray menu
 
 ## Download
 
-**Latest stable release: v1.2.9**
+**Latest stable release: v1.2.10**
 
 | File | Purpose |
 |---|---|
 | [`PrayerMusicGuard-Setup.exe`](https://github.com/sliveamer20/PrayerMusicGuard/releases) | The recommended **Windows installer** (per-user, no administrator required) |
 
-👉 **[Open the official v1.2.9 release](https://github.com/sliveamer20/PrayerMusicGuard/releases/tag/v1.2.9)**
+👉 **[Open the official v1.2.10 release](https://github.com/sliveamer20/PrayerMusicGuard/releases/tag/v1.2.10)**
 
 Every release is Authenticode-signed and ships a `SHA256SUMS.txt` with the expected
 hashes — see [SECURITY.md](SECURITY.md) for how to verify a binary before installing.
@@ -367,7 +367,7 @@ The `releases/` folder is the **local final-release archive**: official binaries
 on this machine, not in the git tree. **Official release binaries — the signed
 installer, `SHA256SUMS.txt`, and the release manifest — are published through
 [GitHub Releases](https://github.com/sliveamer20/PrayerMusicGuard/releases)**
-(current: **v1.2.9**). The layout and policy of the local archive are documented in
+(current: **v1.2.10**). The layout and policy of the local archive are documented in
 `releases/RELEASES.md`.
 
 ---
