@@ -28,12 +28,23 @@ releases/*
 backup/
 cleanup_backup_phase20_*/
 
+# --- Historical source snapshots and phase-20 test/QA scripts (local only;
+# removed from the public repo in Phase 20.53; not required to build or run) ---
+_backup_phase*.py
+main_backup_*.py
+main_before_*.py
+qa_phase20_*.py
+test_phase20_*.py
+test_phase20_*.js
+uat_phase20_*.py
+
 # --- Local agent/AI tooling config (contains provider routing, not app source) ---
 .opencode/
 opencode.json
 
-# --- Generated QA evidence (embeds local machine paths; regenerated per phase) ---
-reports/phases/phase20*_evidence/
+# --- Local-only internal development/QA history (removed from the public repo
+# in Phase 20.53; reports/ is regenerated per phase and is not published) ---
+reports/
 
 # --- Local developer scratch scripts (read machine-local credential files) ---
 diagnose.py
