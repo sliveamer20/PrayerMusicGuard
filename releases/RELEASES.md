@@ -5,7 +5,35 @@ Each release folder is immutable: it must never be modified, renamed, or mixed.
 
 ## Stable releases
 
-### v1.2.5 (current stable, only retained release)
+### v1.2.8 (current stable)
+Location: `releases\v1.2.8\`
+Built: 2026-09-23, Phase 20.51 final release — rebuilt from the current source
+(commit `fd5e580`, identical to the verified Phase 20.47 Final Stable state plus
+the 1.2.7 → 1.2.8 version bump) with the pinned Windows 7 toolchain.
+Files:
+- `PrayerMusicGuard.exe` — signed EXE (one-dir bootloader; run from its installed
+  folder, SHA-256 `3C1B50B1…E43E0E`)
+- `PrayerMusicGuard-Setup.exe` — signed Windows installer
+  (SHA-256 `BC941805…D0079`), per-user, no administrator required
+- `SHA256SUMS.txt` — integrity hashes of both artifacts
+- `RELEASE_MANIFEST.txt` — build metadata, toolchain, QA results
+
+Verification: app reports v1.2.8 at runtime; 14/14 build + PYZ-encryption +
+version checks; 28/28 standalone runtime QA; 28/28 installed runtime QA; install
+exit 0 (1,024 files, installed EXE hash-identical, signature preserved);
+uninstall exit 0 with a clean removal and no residual registry entries.
+Published as the GitHub Release `v1.2.8`, assets byte-matching this folder.
+
+### v1.2.7 (historical; superseded by v1.2.8)
+Location: `releases\v1.2.7\`
+The Phase 20.47 Final Stable build, published as the GitHub Release `v1.2.7`
+(source-stripped, PYZ-encrypted, Authenticode-signed; the GitHub release assets
+were built from `dist\Phase20-47-Final-Stable\`, which is byte-equivalent to this
+source state). Kept as an immutable historical record; not modified.
+Note: this local folder also retains the earlier 2026-09-18 one-file build
+artifacts from the pre-20.47 release process.
+
+### v1.2.5 (historical)
 Location: `releases\v1.2.5\`
 Files:
 - `PrayerMusicGuard.exe` — standalone EXE (Win7-compatible toolchain)
@@ -39,21 +67,21 @@ on the real Windows 7 SP1 x64 machine.
 
 Older stable releases (v1.1.0, v1.2.0, v1.2.1, v1.2.2, v1.2.3, v1.2.4) and
 the former `releases\archive\` (test-only/obsolete artifacts) were removed
-from this folder during the 2026-09-13 release cleanup; v1.2.5 is the only
-retained release.
+from this folder during the 2026-09-13 release cleanup. Retained historical
+releases: v1.2.5, v1.2.7, v1.2.8.
 
-Future stable versions are added as new `vX.Y.Z\` folders (created only by
-`release.ps1 -Release` after bumping the `VERSION` file).
+Future stable versions are added as new `vX.Y.Z\` folders, one immutable folder
+per version, after bumping the `VERSION` file and completing the build + QA.
 
 ## Important: what is NOT a stable release
 
-- The project-root `dist\` folder is CURRENT BUILD OUTPUT ONLY — it is not a
-  stable release and not an archive. `release.ps1` and `PrayerMusicGuard.iss`
-  operate on it (the installer packages `dist\PrayerMusicGuard.exe`), and its
-  contents are recreated by each build. As of this writing its contents are
-  byte-identical duplicates of `releases\v1.2.5` (leftovers of the v1.2.5
-  build), but the authoritative v1.2.5 copies live here, under
-  `releases\v1.2.5\`.
+- The project-root `dist\` folder is TEST/EXPERIMENTAL BUILD OUTPUT ONLY — it is
+  not a stable release and not an archive. It holds many phase-by-phase builds
+  (`Phase20-XX-*` folders) whose contents are recreated by each build, and it
+  must never be cleaned, deleted, or reorganized. The installer's `[Files]`
+  source is a staged bundle under `dist\`. The authoritative release copies live
+  HERE, under `releases\vX.Y.Z\`, and GitHub Releases are published from these
+  folders only.
 
 - The Windows 7 toolchain is maintained separately under `win7\`
   (`win7\python\` — Python 3.8.10 x64 runtime, and `win7\venv\` — PyInstaller

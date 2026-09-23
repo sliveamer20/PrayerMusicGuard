@@ -38,7 +38,7 @@ logger.addHandler(handler)
 logger.propagate = False
 
 APP_ID = "PrayerMusicGuard.App"
-APP_VERSION = "1.2.7"
+APP_VERSION = "1.2.8"
 DEVELOPER_CREDIT = "Developed by Ayman Alaa Abu Leila"
 APP_DIR = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))
 LOCAL_DIR = Path(os.environ.get("APPDATA", Path.home())) / "PrayerMusicGuard"

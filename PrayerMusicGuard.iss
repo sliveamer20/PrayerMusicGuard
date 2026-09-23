@@ -3,7 +3,7 @@
 
 #define MyAppName "PrayerMusicGuard"
 #define MyAppNameAr "صلاة وسكون"
-#define MyAppVersion "1.2.7"
+#define MyAppVersion "1.2.8"
 #define MyAppExeName "PrayerMusicGuard.exe"
 #define MyAppDirName "PrayerMusicGuard"
 
