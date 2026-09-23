@@ -5,7 +5,34 @@ Each release folder is immutable: it must never be modified, renamed, or mixed.
 
 ## Stable releases
 
-### v1.2.8 (current stable)
+### v1.2.9 (current final release)
+Location: `releases\v1.2.9\`
+Built: 2026-09-23, Phase 20.61 final stable release — promoted byte-for-byte
+from the fully tested Phase 20.60 build (`dist\Phase20-60-v1.2.9-Test\`); the
+source was **not** rebuilt for this release. Version bumped 1.2.8 → 1.2.9
+(Phase 20.60) and built with the pinned Windows 7 toolchain.
+**v1.2.9 is the FIRST stable release containing Auto Update support.**
+Files:
+- `PrayerMusicGuard.exe` — signed EXE (one-dir bootloader; run from its installed
+  folder, SHA-256 `7C8AF804…0D6302`)
+- `PrayerMusicGuard-Setup.exe` — signed Windows installer
+  (SHA-256 `95B890FE…092958`), per-user, no administrator required
+- `SHA256SUMS.txt` — integrity hashes of both artifacts
+- `RELEASE_MANIFEST.txt` — build metadata, toolchain, QA results
+
+Verification (Phase 20.60, run on the exact artifacts promoted here): the app
+reports v1.2.9 at runtime; 159/159 updater + update-UI regression checks;
+35/35 application regression; 24/24 live + offline Auto Update QA; the real EXE
+runs on both the WebView2 and Tkinter fallback paths with the system tray live;
+isolated install exit 0 (1,024 files, installed EXE hash-identical, signature
+preserved); uninstall exit 0 with a clean removal. Authenticode-signed by
+`CN=Ayman Alaa Abu Leila` (self-signed, RFC 3161 timestamped); the SHA-256
+hashes above remain the authoritative integrity check.
+Not yet published to GitHub: this phase performed local finalization only
+(GitHub publication is a separate step), so the live update channel still
+resolves to v1.2.8 until v1.2.9 is published.
+
+### v1.2.8 (historical; superseded by v1.2.9)
 Location: `releases\v1.2.8\`
 Built: 2026-09-23, Phase 20.51 final release — rebuilt from the current source
 (commit `fd5e580`, identical to the verified Phase 20.47 Final Stable state plus
@@ -24,51 +51,20 @@ exit 0 (1,024 files, installed EXE hash-identical, signature preserved);
 uninstall exit 0 with a clean removal and no residual registry entries.
 Published as the GitHub Release `v1.2.8`, assets byte-matching this folder.
 
-### v1.2.7 (historical; superseded by v1.2.8)
-Location: `releases\v1.2.7\`
-The Phase 20.47 Final Stable build, published as the GitHub Release `v1.2.7`
-(source-stripped, PYZ-encrypted, Authenticode-signed; the GitHub release assets
-were built from `dist\Phase20-47-Final-Stable\`, which is byte-equivalent to this
-source state). Kept as an immutable historical record; not modified.
-Note: this local folder also retains the earlier 2026-09-18 one-file build
-artifacts from the pre-20.47 release process.
+### Older releases (removed; not active)
 
-### v1.2.5 (historical)
-Location: `releases\v1.2.5\`
-Files:
-- `PrayerMusicGuard.exe` — standalone EXE (Win7-compatible toolchain)
-- `PrayerMusicGuard-Setup.exe` — Windows installer (Inno Setup 6.7.3)
-- `SHA256SUMS.txt` — integrity hashes of the two artifacts above
-- `RELEASE_MANIFEST.txt` — build metadata (version, date, source hash)
+The previous release folders (`v1.2.5\`, `v1.2.6\`, `v1.2.7\`) were removed from
+this folder during the 2026-09-23 Phase 20.52 final release cleanup. **v1.2.8 was
+the only final release at that time** (it has since been superseded by v1.2.9,
+the current final release, in Phase 20.61); no older release folders remain in
+`releases\`. v1.2.8 itself is preserved here as an immutable historical record.
+The GitHub Release `v1.2.7` and its tag were deleted in the same cleanup, so
+v1.2.8 is also the only published GitHub release. A one-time safety backup of the
+removed artifacts was taken outside the project before deletion.
 
-SHA256 verification status: **VERIFIED** (Phase 59 release; hashes of both
-artifacts match SHA256SUMS.txt, and dist\ copies are byte-identical).
-Re-verified 2026-09-13 after the release cleanup.
-
-Highlights: reliable prayer trigger (5s monitoring cadence +
-5-minute catch-up window + day-bucketed duplicate prevention, midnight-safe);
-exception-armored monitoring/countdown/dashboard chains with full tracebacks
-and per-tick DEBUG diagnostics (PMG_LOG_LEVEL); per-window APPCOMMAND
-pause/resume proof-logging with PID/window detail; reliable next-prayer
-HH:MM:SS countdown with tomorrow fallback; scrollable responsive dashboard at
-all window sizes; manual Dark/Light theme toggle (persisted, independent of
-the Windows system theme); optional per-user launch-at-logon (HKCU Run entry,
-no admin needed) with single-instance mutex guard; clean timer cancellation
-and bounded worker shutdown; internal WAV announcements with completion
-logging and hardened MP3 fallback validation.
-Built with the Windows 7 toolchain (Python 3.8.10 x64 / PyInstaller 5.13.2),
-cp38 PIL bundled, Win7-era bootloader, python38.dll, no api-ms-win-core-path
-dependency. Frozen-build integration tests passed on the real EXE: monitoring
-starts once, real VLC playing→paused→playing via APPCOMMAND only, internal
-WAV from _MEIPASS ~2s after pause, no external player, single-instance guard,
-close-to-tray, per-user installer verified (installed EXE hash-identical to
-release). Full hardware verification still requires running this exact build
-on the real Windows 7 SP1 x64 machine.
-
-Older stable releases (v1.1.0, v1.2.0, v1.2.1, v1.2.2, v1.2.3, v1.2.4) and
-the former `releases\archive\` (test-only/obsolete artifacts) were removed
-from this folder during the 2026-09-13 release cleanup. Retained historical
-releases: v1.2.5, v1.2.7, v1.2.8.
+Older stable releases (v1.1.0, v1.2.0, v1.2.1, v1.2.2, v1.2.3, v1.2.4, and the
+former `releases\archive\`) had already been removed during the 2026-09-13
+release cleanup.
 
 Future stable versions are added as new `vX.Y.Z\` folders, one immutable folder
 per version, after bumping the `VERSION` file and completing the build + QA.
@@ -76,12 +72,14 @@ per version, after bumping the `VERSION` file and completing the build + QA.
 ## Important: what is NOT a stable release
 
 - The project-root `dist\` folder is TEST/EXPERIMENTAL BUILD OUTPUT ONLY — it is
-  not a stable release and not an archive. It holds many phase-by-phase builds
-  (`Phase20-XX-*` folders) whose contents are recreated by each build, and it
-  must never be cleaned, deleted, or reorganized. The installer's `[Files]`
-  source is a staged bundle under `dist\`. The authoritative release copies live
-  HERE, under `releases\vX.Y.Z\`, and GitHub Releases are published from these
-  folders only.
+  not a stable release and not an archive. It previously held many
+  phase-by-phase builds (`Phase20-XX-*` folders) whose contents were recreated by
+  each build; all obsolete build folders were removed during the 2026-09-23
+  Phase 20.52 final release cleanup, and it now retains only the current final
+  build, `dist\Phase20-51-Final-v1.2.8\`, which is the build the v1.2.8 release
+  was produced from. The installer's `[Files]` source is a staged bundle under
+  `dist\`. The authoritative release copies live HERE, under
+  `releases\vX.Y.Z\`, and GitHub Releases are published from these folders only.
 
 - The Windows 7 toolchain is maintained separately under `win7\`
   (`win7\python\` — Python 3.8.10 x64 runtime, and `win7\venv\` — PyInstaller

@@ -246,6 +246,10 @@ def run(ready_file: str | None = None) -> int:
 
     if api is not None:
         try:
+            api.attach_webview_window(window)
+        except Exception as e:
+            _log(f"Failed to attach window to update bridge: {e}")
+        try:
             api.start_scheduler()
             _log("Scheduler started")
         except Exception as error:

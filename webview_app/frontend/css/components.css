@@ -505,8 +505,22 @@
 
 .card__hint.is-success:hover { background: color-mix(in srgb, var(--success) 24%, transparent); transform: scale(1.05); }
 .card__hint.is-warning:hover { background: color-mix(in srgb, var(--warning) 26%, transparent); transform: scale(1.05); }
-.card__hint.is-error:hover   { background: color-mix(in srgb, var(--error) 23%, transparent);   transform: scale(1.05); }
-.card__hint.is-info:hover    { background: color-mix(in srgb, var(--accent) 23%, transparent);  transform: scale(1.05); }
+.card__hint.is-error:hover { background: color-mix(in srgb, var(--error) 23%, transparent); transform: scale(1.05); }
+.card__hint.is-info:hover { background: color-mix(in srgb, var(--accent) 23%, transparent); transform: scale(1.05); }
+
+/* Phase 20.58: update panel — token-driven, no new framework.
+   Progress bar reuses .ring__track semantics (SVG track + token fill). */
+.update-versions { display: flex; align-items: center; gap: var(--space-3); margin: 10px 0 0; }
+.update-version { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.update-version__label { font-size: 0.75rem; color: var(--muted); }
+.update-version__value { font-size: 1.05rem; color: var(--fg); }
+.update-versions__arrow { color: var(--muted); flex: 0 0 auto; }
+.update-versions__arrow .icon { font-size: 1.1rem; }
+.update-progress { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+.update-progress[hidden] { display: none; }
+.update-progress__track { flex: 1; height: 8px; border-radius: 999px; background: var(--ring-track, color-mix(in srgb, var(--fg) 10%, transparent)); overflow: hidden; }
+.update-progress__fill { height: 100%; width: 0%; border-radius: 999px; background: var(--accent); transition: width 220ms ease; }
+.update-progress__pct { font-size: 0.8rem; font-weight: 600; color: var(--muted); min-width: 3ch; text-align: center; }
 
 .hero {
   display: grid;

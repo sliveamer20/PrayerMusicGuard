@@ -38,7 +38,7 @@ logger.addHandler(handler)
 logger.propagate = False
 
 APP_ID = "PrayerMusicGuard.App"
-APP_VERSION = "1.2.8"
+APP_VERSION = "1.2.9"
 DEVELOPER_CREDIT = "Developed by Ayman Alaa Abu Leila"
 APP_DIR = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))
 LOCAL_DIR = Path(os.environ.get("APPDATA", Path.home())) / "PrayerMusicGuard"
@@ -1942,6 +1942,12 @@ class App:
         ttk.Label(about_card, text=f"الإصدار v{APP_VERSION} — {DEVELOPER_CREDIT}", style="Sub.TLabel", anchor="e").grid(row=1, column=0, sticky="ew", pady=(4, 0))
         ttk.Label(about_card, text="يوقف مشغّل الموسيقى المحدد تلقائيًا وقت الصلاة — بأوامر وسائط فقط، دون تعليق أو إنهاء أي عملية، ودون لمس برنامج المؤذن.", style="Sub.TLabel", anchor="e", wraplength=420, justify="right").grid(row=2, column=0, sticky="ew", pady=(8, 0))
         ttk.Label(about_card, text="متوافق مع ويندوز 7 SP1 x64 حتى ويندوز 11 x64.", style="CardHint.TLabel", anchor="e").grid(row=3, column=0, sticky="ew", pady=(2, 0))
+        # Phase 20.58: manual update check (Tkinter fallback UI — Windows 7 path)
+        self._update_status_var = tk.StringVar(value="")
+        ttk.Button(about_card, text=f"{ICONS['refresh']}  التحقق من التحديثات",
+                   command=self.check_for_updates).grid(row=4, column=0, sticky="ew", pady=(10, 0))
+        self._update_label = ttk.Label(about_card, textvariable=self._update_status_var, style="CardHint.TLabel", anchor="e", wraplength=420, justify="right")
+        self._update_label.grid(row=5, column=0, sticky="ew", pady=(4, 0))
 
         # Phase 65: card refs for responsive dashboard reflow
         self._row1_cards = (times_card, None, monitor)  # legacy refs
@@ -3156,6 +3162,219 @@ class App:
             logger.error(f"Tray icon fallback generation failed: {e}")
             return None
 
+    # ------------------------------------------------------------------
+    # Phase 20.58: Auto Update — Tkinter fallback UI (Windows 7 path).
+    #
+    # All update logic lives in webview_app/updater.py via the shared
+    # webview_app/update_flow.py controller (the same one the WebView2 bridge
+    # uses), so nothing is duplicated. GitHub API, download and SHA256 work
+    # run on the controller's daemon worker threads — never the Tk thread.
+    # UI updates are marshalled back with root.after(0, ...), exactly like
+    # every other worker in this class. Manual check only: no timers, no
+    # background scheduling.
+    # ------------------------------------------------------------------
+    def _update_flow(self):
+        flow = getattr(self, "_update_flow_instance", None)
+        if flow is not None:
+            return flow
+        try:
+            # Source-mode support: update_flow lives in webview_app/. In the
+            # frozen build it is a top-level PYZ module (spec hiddenimports +
+            # pathex), but webview_app/ is not on sys.path when main.py is run
+            # directly from the source tree, so the Tk fallback would silently
+            # no-op. Harmless in the frozen build: that webview_app/ dir holds
+            # only data files (no .py), so nothing can be shadowed.
+            _wv_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                   "webview_app")
+            if os.path.isdir(_wv_dir) and _wv_dir not in sys.path:
+                sys.path.insert(0, _wv_dir)
+            import update_flow as _uf
+            flow = _uf.UpdateFlow(
+                current_version=APP_VERSION,
+                on_state=self._on_update_state,
+                on_progress=self._on_update_progress,
+                on_exit=self._update_exit,
+            )
+        except Exception as exc:
+            logger.error(f"update_flow unavailable: {exc}")
+            flow = None
+        self._update_flow_instance = flow
+        return flow
+
+    def _update_set_status(self, text: str) -> None:
+        try:
+            if getattr(self, "_update_status_var", None) is None:
+                self._update_status_var = tk.StringVar(value="")
+            self._update_status_var.set(text)
+        except Exception:
+            pass
+
+    def _tk_alive(self) -> bool:
+        """True while the app has not exited. Read as a plain bool — never
+        calls Tk from a worker thread (winfo_exists()/after() from off the
+        main loop raise 'main thread is not in main loop'). exit_app sets
+        _app_closed first, which is the authoritative liveness flag."""
+        return not getattr(self, "_app_closed", False)
+
+    def _on_update_state(self, state: str, message: str) -> None:
+        # Called from a worker thread — marshal to Tk.
+        if not self._tk_alive():
+            return
+        try:
+            self.root.after(0, lambda: self._render_update_state(state, message))
+        except Exception:
+            pass
+
+    def _on_update_progress(self, percent: int) -> None:
+        if not self._tk_alive():
+            return
+        try:
+            self.root.after(0, lambda: self._render_update_progress(percent))
+        except Exception:
+            pass
+
+    def _render_update_progress(self, percent: int) -> None:
+        try:
+            bar = getattr(self, "_update_progress", None)
+            if bar is not None:
+                bar["value"] = max(0, min(100, int(percent)))
+        except Exception:
+            pass
+
+    def _render_update_state(self, state: str, message: str) -> None:
+        self._update_set_status(message or "")
+        bar = getattr(self, "_update_progress", None)
+        dlg = getattr(self, "_update_dialog", None)
+        install_btn = getattr(self, "_update_install_btn", None)
+        later_btn = getattr(self, "_update_later_btn", None)
+        check_btn = getattr(self, "_update_check_btn", None)
+        busy = state in ("checking", "downloading", "verifying", "ready", "launching")
+        # The dialog widgets are all pack()-managed; use pack_forget() to hide
+        # them (grid/grid_remove on a packed widget raises a TclError).
+        if bar is not None:
+            try:
+                if state in ("downloading", "verifying", "ready", "launching", "done"):
+                    bar.pack(anchor="w", pady=(0, 10))
+                else:
+                    bar.pack_forget()
+            except Exception:
+                pass
+        if state == "downloading":
+            flow = getattr(self, "_update_flow_instance", None)
+            if flow is not None:
+                self._render_update_progress(flow.status().get("progress", 0))
+        if state == "available":
+            flow = self._update_flow()
+            cur, new = "", ""
+            if flow is not None:
+                snap = flow.status()
+                cur, new = snap.get("current_version", ""), snap.get("latest_version", "")
+            self._update_set_status(f"الإصدار {new} متاح (الحالي {cur}).")
+            if install_btn is not None:
+                install_btn.pack(side="right", padx=(0, 6))
+            if later_btn is not None:
+                later_btn.pack(side="right")
+        elif state in ("done", "up-to-date", "failed", "idle"):
+            if install_btn is not None:
+                install_btn.pack_forget()
+            if later_btn is not None:
+                later_btn.pack_forget()
+        if check_btn is not None:
+            try:
+                check_btn.config(state="disabled" if busy else "normal")
+            except Exception:
+                pass
+        if dlg is not None and state in ("done", "idle", "failed", "up-to-date", "available"):
+            try:
+                dlg.update_idletasks()
+            except Exception:
+                pass
+
+    def _update_exit(self) -> None:
+        # Only ever called after launch_installer() succeeded. Reuse the
+        # existing shutdown path (exit_app) on the Tk thread.
+        if not self._tk_alive():
+            return
+        try:
+            self.root.after(0, self.exit_app)
+        except Exception as exc:
+            logger.error(f"could not schedule exit after update: {exc}")
+
+    def check_for_updates(self) -> None:
+        """Manual update check (Tkinter fallback). Opens a small dialog and
+        drives the shared update_flow controller; never touches GitHub on the
+        UI thread, never installs without confirmation."""
+        flow = self._update_flow()
+        if flow is None:
+            self._update_set_status("التحديث غير متاح في هذا النظام.")
+            return
+        if getattr(self, "_update_dialog", None) is not None:
+            try:
+                if self._update_dialog.winfo_exists():
+                    self._update_dialog.lift()
+                    return
+            except Exception:
+                pass
+        dlg = tk.Toplevel(self.root)
+        dlg.title("التحقق من التحديثات")
+        dlg.resizable(False, False)
+        # NOT transient(self.root): a transient Toplevel follows its master's
+        # withdrawn state, so the dialog would stay hidden when the main window
+        # is minimized to the tray (the common case for the tray menu path).
+        try:
+            if ICON_PATH.exists():
+                dlg.iconbitmap(default=str(ICON_PATH))
+        except Exception:
+            pass
+        frame = ttk.Frame(dlg, padding=(20, 18), style="Card.TFrame")
+        frame.pack(fill="both", expand=True)
+        ttk.Label(frame, text=f"الإصدار الحالي: v{APP_VERSION}", style="Card.TLabel").pack(anchor="e", pady=(0, 8))
+        self._update_status_var.set("جارٍ التحقق من التحديثات…")
+        ttk.Label(frame, textvariable=self._update_status_var, style="CardHint.TLabel",
+                  wraplength=380, justify="right").pack(anchor="e", pady=(0, 8))
+        self._update_progress = ttk.Progressbar(frame, length=360, mode="determinate",
+                                                style="Splash.Horizontal.TProgressbar")
+        self._update_progress.pack_forget()
+        btns = ttk.Frame(frame, style="Card.TFrame")
+        btns.pack(fill="x")
+        self._update_check_btn = ttk.Button(btns, text="إعادة التحقق", command=self.check_for_updates)
+        self._update_check_btn.pack(side="right", padx=(0, 6))
+        self._update_install_btn = ttk.Button(btns, text="تثبيت التحديث", style="Accent.TButton",
+                                              command=self._install_update)
+        self._update_install_btn.pack_forget()
+        self._update_later_btn = ttk.Button(btns, text="لاحقًا", command=self._dismiss_update)
+        self._update_later_btn.pack_forget()
+        dlg.protocol("WM_DELETE_WINDOW", self._dismiss_update)
+        self._update_dialog = dlg
+        dlg.update_idletasks()
+        try:
+            dlg.deiconify()
+            dlg.lift()
+        except Exception:
+            pass
+        flow.check_async()
+
+    def _install_update(self) -> None:
+        flow = self._update_flow()
+        if flow is None:
+            return
+        result = flow.start_update()
+        if not result.get("ok"):
+            self._update_set_status(result.get("error", "تعذر بدء التحديث."))
+
+    def _dismiss_update(self) -> None:
+        flow = getattr(self, "_update_flow_instance", None)
+        if flow is not None:
+            flow.reset()
+        dlg = getattr(self, "_update_dialog", None)
+        if dlg is not None:
+            try:
+                dlg.destroy()
+            except Exception:
+                pass
+        self._update_dialog = None
+        self._update_set_status("")
+
     def start_tray(self) -> None:
         if not TRAY_AVAILABLE:
             logger.warning("Tray unavailable: pystray/PIL not importable; close will exit the app.")
@@ -3169,6 +3388,7 @@ class App:
             pystray.MenuItem(f"{ICONS['test']}  بدء/إيقاف المراقبة", lambda icon, item: self.root.after(0, self.toggle_monitor)),
             pystray.MenuItem(f"{ICONS['resume']}  استئناف الموسيقى الآن", lambda icon, item: self.root.after(0, self.resume_now)),
             pystray.Menu.SEPARATOR,
+            pystray.MenuItem(f"{ICONS['refresh']}  التحقق من التحديثات", lambda icon, item: self.root.after(0, self.check_for_updates)),
             pystray.MenuItem(f"{ICONS['exit']}  خروج", lambda icon, item: self.root.after(0, self.exit_app)))
         self.tray = pystray.Icon("PrayerMusicGuard", image, "صلاة وسكون", menu)
         threading.Thread(target=self.tray.run, daemon=True).start()

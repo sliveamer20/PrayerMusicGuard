@@ -881,6 +881,108 @@ class BackendAPI:
             pass
         return {"ok": True, "diag": True}
 
+    # ------------------------------------------------------------------
+    # Phase 20.58: Auto Update UI bridge.
+    #
+    # The frontend NEVER talks to GitHub directly. These three methods are a
+    # thin facade over update_flow.UpdateFlow, which in turn is the only
+    # driver of webview_app/updater.py (the single source of update truth).
+    #
+    #   check_for_updates()  -> starts a manual check on a worker thread
+    #   get_update_status()  -> lock-protected snapshot (the frontend polls
+    #                           this for state/progress; it never blocks)
+    #   start_update()       -> USER ACTION: download+verify+launch, refused
+    #                           until the user has confirmed an available update
+    #
+    # All network work happens off the UI thread. Nothing is downloaded before
+    # confirmation, no background scheduling exists here, and no method ever
+    # raises to the JS side.
+    # ------------------------------------------------------------------
+    def _update_flow(self):
+        """Lazily build the per-instance update flow, reusing updater.py only."""
+        flow = getattr(self, "_update_flow_instance", None)
+        if flow is not None:
+            return flow
+        try:
+            import update_flow
+            current = ""
+            if _MAIN is not None:
+                current = str(getattr(_MAIN, "APP_VERSION", "") or "").strip()
+            flow = update_flow.UpdateFlow(
+                current_version=current,
+                on_exit=self._update_quit,
+            )
+        except Exception as error:
+            _log("update_flow unavailable: {0}".format(error))
+            flow = None
+        self._update_flow_instance = flow
+        return flow
+
+    def _update_quit(self):
+        """Close the WebView2 window after the installer has spawned.
+
+        Reuses the existing shutdown path: window.destroy() ends
+        webview.start(), which returns normally and lets webview_main.run()
+        exit the process. Only ever called after launch_installer() succeeded.
+        """
+        window = getattr(self, "_webview_window", None)
+        if window is None:
+            _log("update quit requested but no window is attached")
+            return
+        try:
+            window.destroy()
+        except Exception as error:
+            _log("update quit failed: {0}".format(error))
+
+    def attach_webview_window(self, window) -> None:
+        """webview_main attaches the window so the update flow can close it."""
+        self._webview_window = window
+
+    def check_for_updates(self) -> dict:
+        """Start a manual update check on a worker thread. Never blocks.
+
+        Returns {"ok": True, ...} immediately with the current status; the
+        frontend then polls get_update_status() for the result.
+        """
+        flow = self._update_flow()
+        if flow is None:
+            return {"ok": False, "error": "التحديث غير متاح في هذا النظام."}
+        return flow.check_async()
+
+    def get_update_status(self) -> dict:
+        """Lock-protected snapshot of the current update state/progress.
+
+        Cheap and non-blocking — safe for the frontend to poll. Returns a
+        plain {"ok": True, "state": ..., "progress": ..., ...} even when no
+        flow exists, so the UI degrades gracefully.
+        """
+        flow = self._update_flow()
+        if flow is None:
+            return {"ok": False, "error": "التحديث غير متاح في هذا النظام."}
+        return flow.status()
+
+    def start_update(self) -> dict:
+        """USER-ACTION: download, verify and launch the confirmed update.
+
+        Refused unless the flow previously reported an available update, so
+        nothing downloads without explicit confirmation. Returns
+        {"ok": True} when the download started.
+        """
+        flow = self._update_flow()
+        if flow is None:
+            return {"ok": False, "error": "التحديث غير متاح في هذا النظام."}
+        return flow.start_update()
+
+    def dismiss_update(self) -> dict:
+        """Return the flow to idle (the user chose 'Later' / closed the panel).
+
+        Refused while an operation is in flight.
+        """
+        flow = self._update_flow()
+        if flow is None:
+            return {"ok": False, "error": "التحديث غير متاح في هذا النظام."}
+        return flow.reset()
+
     def pause_now(self) -> dict:
         if _MAIN is None:
             return {"ok": False, "error": _LOAD_ERROR or "backend unavailable"}

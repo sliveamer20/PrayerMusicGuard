@@ -38,6 +38,15 @@ hiddenimports = [
     "backend_api",
     "webview_main",
     "uiverse_combobox",
+    # Phase 20.57: auto-update core (webview_app/updater.py) and the semver
+    # library it needs. packaging is already pinned (requirements-win7.txt);
+    # both must be compiled into the PYZ so the frozen EXE can check for updates.
+    "updater",
+    "packaging",
+    "packaging.version",
+    # Phase 20.58: shared update UI state machine (webview_app/update_flow.py)
+    # used by both the WebView2 bridge and the Tkinter fallback.
+    "update_flow",
 ]
 
 tmp_ret = collect_all("pystray")

@@ -874,6 +874,7 @@ var state = null;
       chip.className = "chip " + (on ? "chip--on" : "chip--off");
     }
     setText("app-version", data && data.version ? data.version : "—");
+    setText("update-current-version", data && data.version ? data.version : "—");
     var location = data && data.location ? data.location : "—";
     setText("location-line", data && data.location ? "الموقع: " + data.location : "");
     setText("times-location", location);
@@ -1221,6 +1222,224 @@ function saveSettings(messageId, triggerBtn) {
     });
   }
 
+  /* Phase 20.58: Auto Update UI.
+     The frontend never contacts GitHub. It calls the bridge to start a check,
+     then polls get_update_status() (a cheap, lock-protected snapshot) while an
+     operation is in flight. Polling stops as soon as the flow is idle/failed/
+     available/done, so nothing spins forever. All network work runs on Python
+     worker threads — this side only reads snapshots and renders state. */
+
+  var UPDATE_POLL_MS = 400;
+  var updatePollTimer = null;
+  var updateBusy = false;
+
+  function updateEl(id) {
+    return $(id);
+  }
+
+  function showUpdateProgress(visible) {
+    var bar = updateEl("update-progress");
+    if (bar) {
+      bar.hidden = !visible;
+    }
+  }
+
+  function setUpdateProgress(percent) {
+    var fill = updateEl("update-progress-fill");
+    var pct = updateEl("update-progress-pct");
+    var value = Math.max(0, Math.min(100, Math.round(Number(percent) || 0)));
+    if (fill) {
+      fill.style.width = value + "%";
+    }
+    if (pct) {
+      pct.textContent = value + "%";
+    }
+  }
+
+  function showUpdateVersions(current, latest) {
+    var box = updateEl("update-versions");
+    if (!box) {
+      return;
+    }
+    box.hidden = !(current && latest);
+    setText("update-current", current || "—");
+    setText("update-latest", latest || "—");
+  }
+
+  function setUpdateButtons(opts) {
+    var check = updateEl("btn-check-updates");
+    var install = updateEl("btn-install-update");
+    var later = updateEl("btn-update-later");
+    if (check) {
+      check.disabled = !!opts.busy;
+    }
+    if (install) {
+      install.hidden = !opts.install;
+    }
+    if (later) {
+      later.hidden = !opts.later;
+    }
+  }
+
+  function resetUpdateUI() {
+    updateBusy = false;
+    stopUpdatePoll();
+    showUpdateProgress(false);
+    setUpdateProgress(0);
+    showUpdateVersions("", "");
+    setUpdateButtons({ busy: false, install: false, later: false });
+    setStatus("update-message", "", "");
+  }
+
+  function stopUpdatePoll() {
+    if (updatePollTimer !== null) {
+      clearTimeout(updatePollTimer);
+      updatePollTimer = null;
+    }
+  }
+
+  function scheduleUpdatePoll() {
+    stopUpdatePoll();
+    updatePollTimer = setTimeout(pollUpdateStatus, UPDATE_POLL_MS);
+  }
+
+  function pollUpdateStatus() {
+    updatePollTimer = null;
+    if (!updateBusy) {
+      return;
+    }
+    call("get_update_status").then(function (res) {
+      if (res && res.ok) {
+        renderUpdateState(res);
+      }
+      if (updateBusy) {
+        scheduleUpdatePoll();
+      }
+    });
+  }
+
+  function renderUpdateState(res) {
+    var state = res.state || "idle";
+    var message = res.message || "";
+    setText("update-current-version", res.current_version || "—");
+    switch (state) {
+      case "idle":
+        updateBusy = false;
+        stopUpdatePoll();
+        showUpdateProgress(false);
+        setUpdateProgress(0);
+        showUpdateVersions("", "");
+        setUpdateButtons({ busy: false, install: false, later: false });
+        setStatus("update-message", "", "");
+        break;
+      case "checking":
+        updateBusy = true;
+        showUpdateProgress(false);
+        showUpdateVersions("", "");
+        setUpdateButtons({ busy: true, install: false, later: false });
+        setStatus("update-message", message || "جارٍ التحقق من التحديثات…", "info");
+        break;
+      case "up-to-date":
+        updateBusy = false;
+        stopUpdatePoll();
+        showUpdateProgress(false);
+        showUpdateVersions("", "");
+        setUpdateButtons({ busy: false, install: false, later: false });
+        setStatus("update-message", message || "أنت تستخدم أحدث إصدار.", "success");
+        break;
+      case "available":
+        updateBusy = false;
+        stopUpdatePoll();
+        showUpdateProgress(false);
+        setUpdateProgress(0);
+        showUpdateVersions(res.current_version, res.latest_version);
+        setUpdateButtons({ busy: false, install: true, later: true });
+        setStatus("update-message", message || "تحديث جديد متاح.", "info");
+        break;
+      case "downloading":
+        updateBusy = true;
+        showUpdateVersions(res.current_version, res.latest_version);
+        showUpdateProgress(true);
+        setUpdateProgress(res.progress);
+        setUpdateButtons({ busy: true, install: false, later: false });
+        setStatus("update-message", message || "جارٍ تنزيل التحديث…", "info");
+        break;
+      case "verifying":
+        updateBusy = true;
+        showUpdateProgress(true);
+        setUpdateProgress(100);
+        setUpdateButtons({ busy: true, install: false, later: false });
+        setStatus("update-message", message || "جارٍ التحقق من التحديث…", "info");
+        break;
+      case "ready":
+      case "launching":
+        updateBusy = true;
+        showUpdateProgress(true);
+        setUpdateProgress(100);
+        setUpdateButtons({ busy: true, install: false, later: false });
+        setStatus("update-message", message || "جارٍ بدء التثبيت…", "info");
+        break;
+      case "done":
+        updateBusy = false;
+        showUpdateProgress(true);
+        setUpdateProgress(100);
+        setUpdateButtons({ busy: true, install: false, later: false });
+        setStatus("update-message", message || "سيتم إغلاق البرنامج لإكمال التثبيت.", "success");
+        break;
+      case "failed":
+        updateBusy = false;
+        stopUpdatePoll();
+        showUpdateProgress(false);
+        setUpdateButtons({ busy: false, install: false, later: false });
+        setStatus("update-message", message || "تعذر إكمال التحديث.", "error");
+        break;
+      default:
+        break;
+    }
+  }
+
+  function checkUpdates() {
+    resetUpdateUI();
+    setStatus("update-message", "جارٍ التحقق من التحديثات…", "info");
+    setUpdateButtons({ busy: true, install: false, later: false });
+    return call("check_for_updates").then(function (res) {
+      if (res && res.ok) {
+        updateBusy = true;
+        pollUpdateStatus();
+      } else {
+        updateBusy = false;
+        setStatus("update-message", "تعذر التحقق من التحديثات: " + ((res && res.error) || "خطأ غير معروف"), "error");
+        setUpdateButtons({ busy: false, install: false, later: false });
+      }
+      return res;
+    });
+  }
+
+  function installUpdate() {
+    setStatus("update-message", "جارٍ تنزيل التحديث…", "info");
+    setUpdateButtons({ busy: true, install: false, later: false });
+    showUpdateProgress(true);
+    setUpdateProgress(0);
+    return call("start_update").then(function (res) {
+      if (res && res.ok) {
+        updateBusy = true;
+        pollUpdateStatus();
+      } else {
+        updateBusy = false;
+        showUpdateProgress(false);
+        setStatus("update-message", "تعذر بدء التحديث: " + ((res && res.error) || "خطأ غير معروف"), "error");
+        setUpdateButtons({ busy: false, install: true, later: true });
+      }
+      return res;
+    });
+  }
+
+  function laterUpdate() {
+    call("dismiss_update");
+    resetUpdateUI();
+    setStatus("update-message", "تم التأجيل. يمكنك التحقق مرة أخرى لاحقًا.", "info");
+  }
+
   var appDropdownState = {};
 
   function closeAllAppDropdowns() {
@@ -1442,6 +1661,9 @@ function saveSettings(messageId, triggerBtn) {
     on("btn-dropdown-adhan", function () {
       openAppDropdown("set-adhan", "dropdown-adhan");
     });
+    on("btn-check-updates", checkUpdates);
+    on("btn-install-update", installUpdate);
+    on("btn-update-later", laterUpdate);
     document.addEventListener("themechange", function (event) {
       if (syncingTheme) {
         return;
